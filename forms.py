@@ -1,30 +1,35 @@
-from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
 from datetime import date
-from wtforms import SelectField, StringField
-from wtforms import SelectMultipleField, SubmitField, widgets
-from wtforms import DateField, DecimalField
-from wtforms.validators import NumberRange, Optional
+from decimal import Decimal
+
+from flask_wtf import FlaskForm
 from wtforms import (
+    BooleanField,
     DateField,
     DecimalField,
+    EmailField,
     FieldList,
     Form,
     FormField,
+    PasswordField,
     SelectField,
+    SelectMultipleField,
     StringField,
-    SubmitField
+    SubmitField,
+    TextAreaField,
+    widgets,
 )
-from wtforms.validators import InputRequired
 from wtforms.validators import (
     DataRequired,
+    Email,
     EqualTo,
+    InputRequired,
     Length,
     NumberRange,
     Optional,
     ValidationError,
 )
+
+
 class RegistrationForm(FlaskForm):
     email = EmailField(
         "Email",
@@ -51,8 +56,6 @@ class RegistrationForm(FlaskForm):
     )
 
     submit = SubmitField("Create Account")
-
-from wtforms import BooleanField
 
 class LoginForm(FlaskForm):
     email = EmailField(
@@ -212,3 +215,62 @@ class OnboardingCategoriesForm(FlaskForm):
     submit = SubmitField("Finish setup")
 class LogoutForm(FlaskForm):
     submit = SubmitField("Log out")
+
+
+# AI assistance: OpenAI Codex helped draft the transaction forms and date
+# validation; reviewed and adapted by the project author.
+class TransactionForm(FlaskForm):
+    transaction_type = SelectField(
+        "Transaction type",
+        choices=[
+            ("expense", "Expense"),
+            ("income", "Income"),
+        ],
+        default="expense",
+        validators=[DataRequired()]
+    )
+
+    category_id = SelectField(
+        "Category",
+        coerce=int,
+        validators=[
+            InputRequired(message="Choose a category."),
+            NumberRange(min=1, message="Choose a category.")
+        ]
+    )
+
+    amount = DecimalField(
+        "Amount",
+        places=3,
+        validators=[
+            InputRequired(),
+            NumberRange(
+                min=Decimal("0.001"),
+                max=Decimal("999999999.999"),
+                message="Enter an amount between 0.001 and 999,999,999.999."
+            )
+        ]
+    )
+
+    description = TextAreaField(
+        "Description",
+        validators=[Optional(), Length(max=255)]
+    )
+
+    transaction_date = DateField(
+        "Transaction date",
+        default=date.today,
+        validators=[InputRequired()]
+    )
+
+    submit = SubmitField("Save transaction")
+
+    def validate_transaction_date(self, field):
+        if field.data and field.data > date.today():
+            raise ValidationError(
+                "Transaction date cannot be in the future."
+            )
+
+
+class DeleteTransactionForm(FlaskForm):
+    submit = SubmitField("Delete transaction")

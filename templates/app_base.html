@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% set account_name = (
+    current_user.settings.display_name
+    if current_user.settings and current_user.settings.display_name
+    else current_user.email
+) %}
+
+{% set app_navigation = [
+    {
+        "key": "dashboard",
+        "label": "Dashboard",
+        "symbol": "⌂",
+        "href": url_for("dashboard.dashboard")
+    },
+    {
+        "key": "transactions",
+        "label": "Transactions",
+        "symbol": "↕",
+        "href": url_for("transactions.transactions")
+    },
+    {
+        "key": "budgets",
+        "label": "Budgets",
+        "symbol": "▤",
+        "href": url_for("application.placeholder", page_key="budgets")
+    },
+    {
+        "key": "savings",
+        "label": "Savings",
+        "symbol": "◇",
+        "href": url_for("application.placeholder", page_key="savings")
+    },
+    {
+        "key": "categories",
+        "label": "Categories",
+        "symbol": "◫",
+        "href": url_for("application.placeholder", page_key="categories")
+    },
+    {
+        "key": "history",
+        "label": "History",
+        "symbol": "↶",
+        "href": url_for("application.placeholder", page_key="history")
+    }
+] %}
+
+{% block content %}
+
+<!-- AI assistance: OpenAI Codex helped draft this reusable authenticated app
+layout; reviewed and adapted by the project author. -->
+<div class="app-shell">
+
+    <header class="app-topbar">
+        <a class="app-brand" href="{{ url_for('dashboard.dashboard') }}">
+            <span class="app-brand-mark" aria-hidden="true">S</span>
+            <span>Student Money</span>
+        </a>
+
+        <div class="dropdown app-menu">
+            <button
+                class="app-menu-button"
+                type="button"
+                data-bs-toggle="dropdown"
+                data-bs-display="static"
+                aria-expanded="false"
+                aria-label="Open navigation menu"
+            >
+                <span class="app-menu-icon" aria-hidden="true"></span>
+            </button>
+
+            <div class="dropdown-menu dropdown-menu-end app-floating-menu">
+                <nav class="app-nav" aria-label="Primary navigation">
+                    <p class="app-nav-label">Menu</p>
+
+                    {% for item in app_navigation %}
+                        <a
+                            class="app-nav-link{% if active_page == item.key %} active{% endif %}"
+                            href="{{ item.href }}"
+                            {% if active_page == item.key %}aria-current="page"{% endif %}
+                        >
+                            <span class="app-nav-symbol" aria-hidden="true">
+                                {{ item.symbol }}
+                            </span>
+                            <span>{{ item.label }}</span>
+                        </a>
+                    {% endfor %}
+                </nav>
+
+                <div class="app-account">
+                    <div class="app-account-summary">
+                        <span class="app-account-avatar" aria-hidden="true">
+                            {{ account_name[0]|upper }}
+                        </span>
+                        <span class="app-account-copy">
+                            <strong>{{ account_name }}</strong>
+                            <small>{{ current_user.email }}</small>
+                        </span>
+                    </div>
+
+                    <a
+                        class="app-account-link{% if active_page == 'settings' %} active{% endif %}"
+                        href="{{ url_for('application.placeholder', page_key='settings') }}"
+                        {% if active_page == 'settings' %}aria-current="page"{% endif %}
+                    >
+                        <span aria-hidden="true">⚙</span>
+                        Profile & settings
+                    </a>
+
+                    <form
+                        class="app-logout-form"
+                        method="post"
+                        action="{{ url_for('auth.logout') }}"
+                    >
+                        {{ logout_form.hidden_tag() }}
+                        <button type="submit" class="app-account-link app-logout-button">
+                            <span aria-hidden="true">↪</span>
+                            Log out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <div class="app-main-inner">
+            <header class="app-page-header">
+                <div>
+                    <h1 class="app-page-title">
+                        {% block app_page_title %}{% endblock %}
+                    </h1>
+                    <p class="app-page-subtitle">
+                        {% block app_page_subtitle %}{% endblock %}
+                    </p>
+                </div>
+
+                <div class="app-header-actions">
+                    {% block app_header_actions %}{% endblock %}
+                </div>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="app-flashes" aria-live="polite">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block app_content %}{% endblock %}
+        </div>
+    </main>
+
+</div>
+
+{% endblock %}

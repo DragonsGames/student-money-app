@@ -1,22 +1,21 @@
-from datetime import datetime
-
-from sqlalchemy import String, func
-from sqlalchemy.orm import Mapped, mapped_column
-from flask_login import UserMixin
-from extensions import db
-from datetime import datetime
-from decimal import Decimal
-
-from flask_login import UserMixin
-from sqlalchemy import Boolean, ForeignKey, Numeric, String, func, text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from datetime import date, datetime
 from decimal import Decimal
 
 from flask_login import UserMixin
-from sqlalchemy import Boolean, Date, ForeignKey, Numeric, String, func, text
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Date,
+    ForeignKey,
+    Numeric,
+    String,
+    func,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from extensions import db
+
 
 class User(UserMixin, db.Model):
     goals: Mapped[list["UserGoal"]] = relationship(
@@ -30,6 +29,10 @@ class User(UserMixin, db.Model):
     income_sources: Mapped[list["IncomeSource"]] = relationship(
     back_populates="user",
     cascade="all, delete-orphan"
+    )
+    transactions: Mapped[list["Transaction"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
     )
     __tablename__ = "users"
 
@@ -185,6 +188,72 @@ class Category(db.Model):
     user: Mapped["User"] = relationship(
         back_populates="categories"
     )
+
+    transactions: Mapped[list["Transaction"]] = relationship(
+        back_populates="category"
+    )
+
+
+# AI assistance: OpenAI Codex assisted with drafting the Transaction model
+# structure; reviewed and adapted by the project author.
+class Transaction(db.Model):
+    __tablename__ = "transactions"
+    __table_args__ = (
+        CheckConstraint(
+            "transaction_type IN ('income', 'expense')",
+            name="ck_transactions_type"
+        ),
+        CheckConstraint(
+            "amount > 0",
+            name="ck_transactions_amount_positive"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False
+    )
+
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("categories.id"),
+        nullable=False
+    )
+
+    transaction_type: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False
+    )
+
+    amount: Mapped[Decimal] = mapped_column(
+        Numeric(12, 3),
+        nullable=False
+    )
+
+    description: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True
+    )
+
+    transaction_date: Mapped[date] = mapped_column(
+        Date,
+        nullable=False
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now()
+    )
+
+    user: Mapped["User"] = relationship(
+        back_populates="transactions"
+    )
+
+    category: Mapped["Category"] = relationship(
+        back_populates="transactions"
+    )
+
+
 class UserGoal(db.Model):
     __tablename__ = "user_goals"
 

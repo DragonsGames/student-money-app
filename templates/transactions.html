@@ -1,0 +1,80 @@
+{% extends "app_base.html" %}
+{% set active_page = "transactions" %}
+
+{% block title %}Transactions | Student Money{% endblock %}
+{% block app_page_title %}Transactions{% endblock %}
+{% block app_page_subtitle %}
+Keep a clear record of money that actually entered or left your balance.
+{% endblock %}
+
+{% block app_header_actions %}
+<a class="btn app-primary-button" href="{{ url_for('transactions.add_transaction') }}">
+    <span aria-hidden="true">+</span> Add transaction
+</a>
+{% endblock %}
+
+{% block app_content %}
+
+<!-- AI assistance: OpenAI Codex helped draft this transaction list UI;
+reviewed and adapted by the project author. -->
+<section class="transaction-summary-grid" aria-label="Transaction summary">
+    <article class="transaction-summary-card transaction-summary-primary">
+        <p>Current balance</p>
+        <strong>
+            {{ "{:,.3f}".format(financial_summary.current_balance) }}
+            <span>{{ currency }}</span>
+        </strong>
+        <small>Starting balance, plus income, minus expenses</small>
+    </article>
+
+    <article class="transaction-summary-card">
+        <p>Total transaction income</p>
+        <strong class="transaction-positive">
+            + {{ "{:,.3f}".format(financial_summary.total_income) }}
+            <span>{{ currency }}</span>
+        </strong>
+        <small>Income sources are not included automatically</small>
+    </article>
+
+    <article class="transaction-summary-card">
+        <p>Total spending</p>
+        <strong class="transaction-negative">
+            - {{ "{:,.3f}".format(financial_summary.total_expenses) }}
+            <span>{{ currency }}</span>
+        </strong>
+        <small>Only saved expense transactions</small>
+    </article>
+</section>
+
+<section class="transaction-panel" aria-labelledby="transaction-list-title">
+    <div class="transaction-panel-heading">
+        <div>
+            <p class="dashboard-eyebrow">Activity</p>
+            <h2 id="transaction-list-title">All transactions</h2>
+        </div>
+        <span>{{ transactions|length }} total</span>
+    </div>
+
+    {% if transactions %}
+        <div class="transaction-list">
+            {% set show_actions = true %}
+            {% for transaction in transactions %}
+                {% include "_transaction_row.html" %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state transaction-empty-state">
+            <span class="empty-state-symbol" aria-hidden="true">↕</span>
+            <h3>No transactions yet</h3>
+            <p>
+                Add money that entered or left your balance to begin building
+                your activity history.
+            </p>
+            <a class="btn app-primary-button" href="{{ url_for('transactions.add_transaction') }}">
+                Add your first transaction
+            </a>
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

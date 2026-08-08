@@ -1,28 +1,128 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "app_base.html" %}
+{% set active_page = "dashboard" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-</head>
+{% block title %}Dashboard | Student Money{% endblock %}
 
-<body>
+{% block app_page_title %}Welcome back, {{ display_name }}{% endblock %}
+{% block app_page_subtitle %}
+Here's a calm overview of your money today.
+{% endblock %}
 
-    <h1>Dashboard</h1>
+{% block app_header_actions %}
+<a class="btn app-primary-button" href="{{ url_for('transactions.add_transaction') }}">
+    <span aria-hidden="true">+</span> Add transaction
+</a>
+{% endblock %}
 
-    <p>
-        Welcome {{ user.email }}
-    </p>
-    <form
-    method="post"
-    action="{{ url_for('auth.logout') }}"
->
-    {{ logout_form.hidden_tag() }}
+{% block app_content %}
 
-    {{ logout_form.submit(
-        class="btn btn-outline-danger"
-    ) }}
-</form>
-</body>
+<!-- AI assistance: OpenAI Codex helped structure this dashboard foundation;
+reviewed and adapted by the project author. -->
+<div class="dashboard-grid">
+    <section class="dashboard-balance-card">
+        <div class="dashboard-card-heading">
+            <div>
+                <p class="dashboard-eyebrow">Available money</p>
+                <h2>Your current balance</h2>
+            </div>
+            <span class="dashboard-status-dot" aria-hidden="true"></span>
+        </div>
 
-</html>
+        <p class="dashboard-balance-value">
+            <span>{{ currency }}</span>
+            {{ "{:,.3f}".format(financial_summary.current_balance) }}
+        </p>
+        <p class="dashboard-card-note">
+            Starting balance, plus transaction income, minus expenses.
+        </p>
+    </section>
+
+    <section class="dashboard-insight-card">
+        <span class="dashboard-insight-symbol" aria-hidden="true">✦</span>
+        <div>
+            <p class="dashboard-eyebrow">Safe to spend</p>
+            <h2>Your insight will appear here</h2>
+            <p>
+                We'll show a useful spending insight after transaction and
+                budget data are available.
+            </p>
+        </div>
+        <span class="dashboard-coming-soon">Coming later</span>
+    </section>
+</div>
+
+<section class="dashboard-section" aria-labelledby="summary-title">
+    <div class="dashboard-section-heading">
+        <div>
+            <p class="dashboard-eyebrow">At a glance</p>
+            <h2 id="summary-title">Money summary</h2>
+        </div>
+    </div>
+
+    <div class="dashboard-summary-grid">
+        <article class="summary-card">
+            <span class="summary-symbol summary-symbol-income" aria-hidden="true">↓</span>
+            <p>Income</p>
+            <strong>
+                + {{ "{:,.3f}".format(financial_summary.total_income) }} {{ currency }}
+            </strong>
+            <small>Saved income transactions</small>
+        </article>
+
+        <article class="summary-card">
+            <span class="summary-symbol summary-symbol-spending" aria-hidden="true">↑</span>
+            <p>Spending</p>
+            <strong>
+                - {{ "{:,.3f}".format(financial_summary.total_expenses) }} {{ currency }}
+            </strong>
+            <small>Saved expense transactions</small>
+        </article>
+
+        <article class="summary-card">
+            <span class="summary-symbol summary-symbol-budget" aria-hidden="true">▤</span>
+            <p>Budget</p>
+            <strong>Not set up yet</strong>
+            <small>Budget tools are coming later</small>
+        </article>
+
+        <article class="summary-card">
+            <span class="summary-symbol summary-symbol-savings" aria-hidden="true">◇</span>
+            <p>Savings</p>
+            <strong>Not set up yet</strong>
+            <small>Savings tools are coming later</small>
+        </article>
+    </div>
+</section>
+
+<section class="dashboard-section" aria-labelledby="transactions-title">
+    <div class="dashboard-section-heading">
+        <div>
+            <p class="dashboard-eyebrow">Activity</p>
+            <h2 id="transactions-title">Recent transactions</h2>
+        </div>
+        <span class="dashboard-section-meta">Most recent first</span>
+    </div>
+
+    {% if recent_transactions %}
+        <div class="transaction-list transaction-list-dashboard">
+            {% set show_actions = false %}
+            {% for transaction in recent_transactions %}
+                {% include "_transaction_row.html" %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state dashboard-empty-state">
+            <span class="empty-state-symbol" aria-hidden="true">↕</span>
+            <h3>No transactions yet</h3>
+            <p>
+                Add your first transaction to begin building your recent
+                activity.
+            </p>
+            <a class="btn app-secondary-button" href="{{ url_for('transactions.add_transaction') }}">
+                Add transaction
+            </a>
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

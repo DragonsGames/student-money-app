@@ -1,0 +1,113 @@
+{% extends "app_base.html" %}
+{% set active_page = "transactions" %}
+
+{% block title %}
+{% if mode == "edit" %}Edit{% else %}Add{% endif %} transaction | Student Money
+{% endblock %}
+
+{% block app_page_title %}
+{% if mode == "edit" %}Edit transaction{% else %}Add transaction{% endif %}
+{% endblock %}
+
+{% block app_page_subtitle %}
+Record money that actually entered or left your available balance.
+{% endblock %}
+
+{% block app_content %}
+
+<!-- AI assistance: OpenAI Codex helped draft this reusable transaction form;
+reviewed and adapted by the project author. -->
+<section class="transaction-form-card">
+    <form method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="transaction-form-grid">
+            <div class="onboarding-form-group">
+                {{ form.transaction_type.label(class="form-label onboarding-label") }}
+                {{ form.transaction_type(
+                    class="form-select onboarding-input" + (" is-invalid" if form.transaction_type.errors else "")
+                ) }}
+                {% for error in form.transaction_type.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group">
+                {{ form.category_id.label(class="form-label onboarding-label") }}
+                <select
+                    class="form-select onboarding-input{% if form.category_id.errors %} is-invalid{% endif %}"
+                    id="{{ form.category_id.id }}"
+                    name="{{ form.category_id.name }}"
+                    required
+                >
+                    <option value="0">Choose a category</option>
+                    {% for category in categories %}
+                        <option
+                            value="{{ category.id }}"
+                            data-category-type="{{ category.category_type }}"
+                            {% if form.category_id.data == category.id %}selected{% endif %}
+                        >
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <p id="category-empty-message" class="transaction-category-message" hidden>
+                    You do not have a category for this transaction type yet.
+                </p>
+                {% for error in form.category_id.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group">
+                {{ form.amount.label(class="form-label onboarding-label") }}
+                <p class="onboarding-helper">Enter a positive amount.</p>
+                {{ form.amount(
+                    class="form-control onboarding-input" + (" is-invalid" if form.amount.errors else ""),
+                    placeholder="25.000",
+                    inputmode="decimal"
+                ) }}
+                {% for error in form.amount.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group">
+                {{ form.transaction_date.label(class="form-label onboarding-label") }}
+                <p class="onboarding-helper">Today or an earlier date.</p>
+                {{ form.transaction_date(
+                    class="form-control onboarding-input" + (" is-invalid" if form.transaction_date.errors else "")
+                ) }}
+                {% for error in form.transaction_date.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group transaction-description-field">
+                {{ form.description.label(class="form-label onboarding-label") }}
+                <p class="onboarding-helper">Optional, up to 255 characters.</p>
+                {{ form.description(
+                    class="form-control onboarding-input" + (" is-invalid" if form.description.errors else ""),
+                    placeholder="What was this transaction for?",
+                    rows="3"
+                ) }}
+                {% for error in form.description.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="onboarding-actions transaction-form-actions">
+            <a class="btn onboarding-back" href="{{ url_for('transactions.transactions') }}">
+                Cancel
+            </a>
+            {{ form.submit(class="btn app-primary-button") }}
+        </div>
+    </form>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='transaction-form.js') }}"></script>
+{% endblock %}

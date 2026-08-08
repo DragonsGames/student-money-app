@@ -1,0 +1,49 @@
+{% set category_icon = transaction.category.icon or "•" %}
+
+<article class="transaction-row">
+    <div class="transaction-identity">
+        <span class="transaction-category-icon" aria-hidden="true">
+            {{ category_icon }}
+        </span>
+        <div class="transaction-copy">
+            <strong>{{ transaction.category.name }}</strong>
+            {% if transaction.description %}
+                <span>{{ transaction.description }}</span>
+            {% else %}
+                <span>No description</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="transaction-details">
+        <span>{{ transaction.transaction_date.strftime("%b %d, %Y") }}</span>
+        <span class="transaction-type transaction-type-{{ transaction.transaction_type }}">
+            {{ transaction.transaction_type|capitalize }}
+        </span>
+    </div>
+
+    <strong class="transaction-amount transaction-amount-{{ transaction.transaction_type }}">
+        {% if transaction.transaction_type == "income" %}+{% else %}-{% endif %}
+        {{ "{:,.3f}".format(transaction.amount) }} {{ currency }}
+    </strong>
+
+    {% if show_actions|default(false) %}
+        <div class="transaction-actions">
+            <a
+                class="transaction-action-link"
+                href="{{ url_for('transactions.edit_transaction', transaction_id=transaction.id) }}"
+            >
+                Edit
+            </a>
+            <form
+                method="post"
+                action="{{ url_for('transactions.delete_transaction', transaction_id=transaction.id) }}"
+            >
+                {{ delete_form.csrf_token(id="delete-csrf-" ~ transaction.id) }}
+                <button type="submit" class="transaction-delete-button">
+                    Delete
+                </button>
+            </form>
+        </div>
+    {% endif %}
+</article>
