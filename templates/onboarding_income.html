@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Setup</title>
+</head>
+
+<body>
+
+    <p>Step 3 of 5</p>
+
+    <h1>How do you receive money?</h1>
+    <p>You can add one or multiple income sources.</p>
+
+    <form method="post">
+
+        {{ form.hidden_tag() }}
+
+        <div id="income-sources">
+
+            {% for source in form.sources %}
+                <div class="income-source">
+
+                    <div>
+                        {{ source.form.name.label }}
+                        {{ source.form.name(placeholder="Monthly allowance") }}
+                    </div>
+
+                    <div>
+                        {{ source.form.amount.label }}
+                        {{ source.form.amount(placeholder="300.000") }}
+                    </div>
+
+                    <div>
+                        {{ source.form.frequency.label }}
+                        {{ source.form.frequency() }}
+                    </div>
+
+                    <div>
+                        {{ source.form.next_payment_date.label }}
+                        {{ source.form.next_payment_date() }}
+                    </div>
+
+                    <button type="button" class="remove-source">
+                        Remove
+                    </button>
+
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <button type="button" id="add-source">
+            + Add another income source
+        </button>
+
+        <br><br>
+
+        {{ form.submit() }}
+
+    </form>
+
+    <script src="{{ url_for('static', filename='onboarding-income.js') }}"></script>
+
+</body>
+
+</html>

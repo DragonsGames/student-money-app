@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Starting Balance</title>
+</head>
+
+<body>
+
+    <p>Step 4 of 5</p>
+
+    <h1>How much money do you have right now?</h1>
+
+    <p>
+        Include the money you currently consider available to spend or save.
+    </p>
+
+    <form method="post">
+
+        {{ form.hidden_tag() }}
+
+        <div>
+            {{ form.starting_balance.label }}
+
+            {{ form.starting_balance(
+                placeholder="350.000"
+            ) }}
+
+            {% for error in form.starting_balance.errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        {{ form.submit() }}
+
+    </form>
+
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Set up your account</title>
+</head>
+
+<body>
+
+    <p>Step 1 of 5</p>
+
+    <h1>Let's personalize your experience</h1>
+    <p>This will only take a moment.</p>
+
+    <form method="post">
+
+        {{ form.hidden_tag() }}
+
+        <div>
+            {{ form.display_name.label }}
+            {{ form.display_name(placeholder="Your name") }}
+
+            {% for error in form.display_name.errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.currency.label }}
+            {{ form.currency() }}
+        </div>
+
+        {{ form.submit() }}
+
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Categories</title>
+</head>
+
+<body>
+
+    <p>Step 5 of 5</p>
+
+    <h1>Choose your categories</h1>
+    <p>We've prepared some defaults. You can customize them.</p>
+
+    <form method="post">
+
+        {{ form.hidden_tag() }}
+
+        <div id="categories">
+
+            {% for category in form.categories %}
+                <div class="category">
+
+                    {{ category.form.icon(
+                        placeholder="🍔"
+                    ) }}
+
+                    {{ category.form.name(
+                        placeholder="Category"
+                    ) }}
+
+                    {{ category.form.category_type() }}
+
+                    <button type="button" class="remove-category">
+                        Remove
+                    </button>
+
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <button type="button" id="add-category">
+            + Add category
+        </button>
+
+        <br><br>
+
+        {{ form.submit() }}
+
+    </form>
+
+    <script src="{{ url_for('static', filename='onboarding-categories.js') }}"></script>
+
+</body>
+
+</html>

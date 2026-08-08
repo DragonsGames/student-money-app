@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Your Goals</title>
+</head>
+
+<body>
+
+    <p>Step 2 of 5</p>
+
+    <h1>What would you like help with?</h1>
+    <p>You can choose more than one.</p>
+
+    <form method="post">
+
+        {{ form.hidden_tag() }}
+
+        {% for goal in form.goals %}
+            <div>
+                {{ goal }}
+                {{ goal.label }}
+            </div>
+        {% endfor %}
+
+        {% for error in form.goals.errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+
+        {{ form.submit() }}
+
+    </form>
+
+</body>
+
+</html>
