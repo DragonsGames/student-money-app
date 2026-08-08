@@ -1,39 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "onboarding_base.html" %}
+{% set onboarding_step = 1 %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Set up your account</title>
-</head>
+{% block title %}Set up your profile | Student Money{% endblock %}
+{% block step_name %}Your profile{% endblock %}
+{% block onboarding_title %}Let's make this feel like yours{% endblock %}
+{% block onboarding_subtitle %}
+Tell us what to call you and how you prefer to see your money.
+{% endblock %}
 
-<body>
+{% block onboarding_content %}
 
-    <p>Step 1 of 5</p>
+<form method="post">
+    {{ form.hidden_tag() }}
 
-    <h1>Let's personalize your experience</h1>
-    <p>This will only take a moment.</p>
+    <div class="onboarding-form-group">
+        {{ form.display_name.label(class="form-label onboarding-label") }}
+        <p id="display-name-help" class="onboarding-helper">
+            Your first name or a nickname works perfectly.
+        </p>
+        {{ form.display_name(
+            class="form-control onboarding-input" + (" is-invalid" if form.display_name.errors else ""),
+            placeholder="e.g. Maya",
+            autocomplete="name",
+            aria_describedby="display-name-help"
+        ) }}
 
-    <form method="post">
+        {% for error in form.display_name.errors %}
+            <div class="form-error" role="alert">{{ error }}</div>
+        {% endfor %}
+    </div>
 
-        {{ form.hidden_tag() }}
+    <div class="onboarding-form-group">
+        {{ form.currency.label(class="form-label onboarding-label") }}
+        <p id="currency-help" class="onboarding-helper">
+            We'll use this for balances, income, and spending.
+        </p>
+        {{ form.currency(
+            class="form-select onboarding-input" + (" is-invalid" if form.currency.errors else ""),
+            aria_describedby="currency-help"
+        ) }}
 
-        <div>
-            {{ form.display_name.label }}
-            {{ form.display_name(placeholder="Your name") }}
+        {% for error in form.currency.errors %}
+            <div class="form-error" role="alert">{{ error }}</div>
+        {% endfor %}
+    </div>
 
-            {% for error in form.display_name.errors %}
-                <p>{{ error }}</p>
-            {% endfor %}
-        </div>
+    <div class="onboarding-actions onboarding-actions-end">
+        {{ form.submit(class="btn onboarding-primary") }}
+    </div>
+</form>
 
-        <div>
-            {{ form.currency.label }}
-            {{ form.currency() }}
-        </div>
-
-        {{ form.submit() }}
-
-    </form>
-
-</body>
-</html>
+{% endblock %}

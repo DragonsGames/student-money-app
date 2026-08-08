@@ -1,58 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "onboarding_base.html" %}
+{% set onboarding_step = 5 %}
+{% set onboarding_shell_class = "onboarding-shell-wide" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Categories</title>
-</head>
+{% block title %}Choose your categories | Student Money{% endblock %}
+{% block step_name %}Categories{% endblock %}
+{% block onboarding_title %}Make your money feel organized{% endblock %}
+{% block onboarding_subtitle %}
+We've prepared useful defaults. Rename, remove, or add categories to match your life.
+{% endblock %}
 
-<body>
+{% block onboarding_content %}
 
-    <p>Step 5 of 5</p>
+<form method="post">
+    {{ form.hidden_tag() }}
 
-    <h1>Choose your categories</h1>
-    <p>We've prepared some defaults. You can customize them.</p>
+    <div id="categories" class="dynamic-item-list category-list">
+        {% for category in form.categories %}
+            <article class="dynamic-item-card category">
+                <div class="category-fields">
+                    <div class="category-icon-field">
+                        {{ category.form.icon.label(class="visually-hidden") }}
+                        {{ category.form.icon(
+                            class="form-control onboarding-input category-icon-input" + (" is-invalid" if category.form.icon.errors else ""),
+                            placeholder="★",
+                            aria_label="Category icon"
+                        ) }}
+                        {% for error in category.form.icon.errors %}
+                            <div class="form-error" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    </div>
 
-    <form method="post">
+                    <div class="category-name-field">
+                        {{ category.form.name.label(class="form-label onboarding-label") }}
+                        {{ category.form.name(
+                            class="form-control onboarding-input" + (" is-invalid" if category.form.name.errors else ""),
+                            placeholder="Category name",
+                            autocomplete="off"
+                        ) }}
+                        {% for error in category.form.name.errors %}
+                            <div class="form-error" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    </div>
 
-        {{ form.hidden_tag() }}
+                    <div class="category-type-field">
+                        {{ category.form.category_type.label(class="form-label onboarding-label") }}
+                        {{ category.form.category_type(
+                            class="form-select onboarding-input" + (" is-invalid" if category.form.category_type.errors else "")
+                        ) }}
+                        {% for error in category.form.category_type.errors %}
+                            <div class="form-error" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    </div>
 
-        <div id="categories">
-
-            {% for category in form.categories %}
-                <div class="category">
-
-                    {{ category.form.icon(
-                        placeholder="🍔"
-                    ) }}
-
-                    {{ category.form.name(
-                        placeholder="Category"
-                    ) }}
-
-                    {{ category.form.category_type() }}
-
-                    <button type="button" class="remove-category">
+                    <button
+                        type="button"
+                        class="btn remove-item-button remove-category"
+                        aria-label="Remove category {{ loop.index }}"
+                    >
                         Remove
                     </button>
-
                 </div>
-            {% endfor %}
+            </article>
+        {% endfor %}
+    </div>
 
-        </div>
+    <button type="button" id="add-category" class="btn add-item-button">
+        <span aria-hidden="true">+</span> Add category
+    </button>
 
-        <button type="button" id="add-category">
-            + Add category
-        </button>
+    <div class="onboarding-actions">
+        <a class="btn onboarding-back" href="{{ url_for('onboarding.onboarding_balance') }}">
+            <span aria-hidden="true">←</span> Back
+        </a>
+        {{ form.submit(class="btn onboarding-primary onboarding-finish") }}
+    </div>
+</form>
 
-        <br><br>
+{% endblock %}
 
-        {{ form.submit() }}
+{% block reassurance %}Your setup is almost ready.{% endblock %}
 
-    </form>
-
-    <script src="{{ url_for('static', filename='onboarding-categories.js') }}"></script>
-
-</body>
-
-</html>
+{% block scripts %}
+<script src="{{ url_for('static', filename='onboarding-categories.js') }}"></script>
+{% endblock %}

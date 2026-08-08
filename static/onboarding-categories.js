@@ -1,47 +1,95 @@
-const container = document.getElementById("categories");
-const addButton = document.getElementById("add-category");
+const categoryContainer = document.getElementById("categories");
+const addCategoryButton = document.getElementById("add-category");
 
-addButton.addEventListener("click", function () {
-    const categories = container.querySelectorAll(".category");
 
-    const newCategory = categories[0].cloneNode(true);
-    const newIndex = categories.length;
+if (categoryContainer && addCategoryButton) {
+    function categoryItems() {
+        return Array.from(categoryContainer.querySelectorAll(".category"));
+    }
 
-    newCategory.querySelectorAll("input, select").forEach(function (element) {
-        if (element.name) {
-            element.name = element.name.replace(
-                /categories-\d+-/,
-                `categories-${newIndex}-`
-            );
+    // AI-assisted: keep WTForms FieldList indexes contiguous after add/remove actions.
+    function reindexCategories() {
+        const categories = categoryItems();
+
+        categories.forEach(function (category, index) {
+            category.querySelectorAll("input, select, label").forEach(function (element) {
+                if (element.name) {
+                    element.name = element.name.replace(
+                        /categories-\d+-/,
+                        `categories-${index}-`
+                    );
+                }
+
+                if (element.id) {
+                    element.id = element.id.replace(
+                        /categories-\d+-/,
+                        `categories-${index}-`
+                    );
+                }
+
+                if (element.htmlFor) {
+                    element.htmlFor = element.htmlFor.replace(
+                        /categories-\d+-/,
+                        `categories-${index}-`
+                    );
+                }
+            });
+
+            const removeButton = category.querySelector(".remove-category");
+            if (removeButton) {
+                removeButton.disabled = categories.length === 1;
+                removeButton.setAttribute(
+                    "aria-label",
+                    `Remove category ${index + 1}`
+                );
+            }
+        });
+    }
+
+    function clearClonedCategory(category) {
+        category.querySelectorAll("input, select").forEach(function (field) {
+            field.classList.remove("is-invalid");
+
+            if (field.tagName === "SELECT") {
+                field.selectedIndex = 0;
+            } else {
+                field.value = "";
+            }
+        });
+
+        category.querySelectorAll(".form-error").forEach(function (error) {
+            error.remove();
+        });
+    }
+
+    addCategoryButton.addEventListener("click", function () {
+        const firstCategory = categoryItems()[0];
+
+        if (!firstCategory) {
+            return;
         }
 
-        if (element.id) {
-            element.id = element.id.replace(
-                /categories-\d+-/,
-                `categories-${newIndex}-`
-            );
-        }
+        const newCategory = firstCategory.cloneNode(true);
+        clearClonedCategory(newCategory);
+        categoryContainer.appendChild(newCategory);
+        reindexCategories();
 
-        if (element.tagName === "INPUT") {
-            element.value = "";
-        }
-
-        if (element.tagName === "SELECT") {
-            element.selectedIndex = 0;
+        const nameInput = newCategory.querySelector('[name$="-name"]');
+        if (nameInput) {
+            nameInput.focus();
         }
     });
 
-    container.appendChild(newCategory);
-});
+    categoryContainer.addEventListener("click", function (event) {
+        const removeButton = event.target.closest(".remove-category");
 
-container.addEventListener("click", function (event) {
-    if (!event.target.classList.contains("remove-category")) {
-        return;
-    }
+        if (!removeButton || categoryItems().length === 1) {
+            return;
+        }
 
-    const categories = container.querySelectorAll(".category");
+        removeButton.closest(".category").remove();
+        reindexCategories();
+    });
 
-    if (categories.length > 1) {
-        event.target.closest(".category").remove();
-    }
-});
+    reindexCategories();
+}

@@ -1,38 +1,63 @@
-<!DOCTYPE html>
+{% extends "onboarding_base.html" %}
+{% set onboarding_step = 2 %}
+{% set onboarding_shell_class = "onboarding-shell-wide" %}
 
-<html lang="en">
+{% set goal_descriptions = {
+    "save_more": "Make steady progress toward a stronger cushion.",
+    "stop_overspending": "Stay aware before small purchases add up.",
+    "understand_spending": "See where your money is really going.",
+    "better_habits": "Build routines that feel realistic and repeatable.",
+    "track_money": "Keep a simple, reliable record of your money.",
+    "save_for_something": "Turn a specific plan into a reachable target."
+} %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Your Goals</title>
-</head>
+{% block title %}Choose your goals | Student Money{% endblock %}
+{% block step_name %}Your goals{% endblock %}
+{% block onboarding_title %}What would you like help with?{% endblock %}
+{% block onboarding_subtitle %}
+Choose as many as you like. We'll shape your experience around what matters to you.
+{% endblock %}
 
-<body>
+{% block onboarding_content %}
 
-    <p>Step 2 of 5</p>
+<form method="post">
+    {{ form.hidden_tag() }}
 
-    <h1>What would you like help with?</h1>
-    <p>You can choose more than one.</p>
+    <fieldset class="onboarding-fieldset">
+        <legend class="visually-hidden">Money goals</legend>
 
-    <form method="post">
-
-        {{ form.hidden_tag() }}
-
-        {% for goal in form.goals %}
-            <div>
-                {{ goal }}
-                {{ goal.label }}
-            </div>
-        {% endfor %}
+        <div class="row g-3">
+            {% for goal in form.goals %}
+                <div class="col-12 col-md-6">
+                    <label class="onboarding-choice" for="{{ goal.id }}">
+                        {{ goal(class="onboarding-choice-input") }}
+                        <span class="onboarding-choice-card">
+                            <span class="onboarding-choice-copy">
+                                <span class="onboarding-choice-title">
+                                    {{ goal.label.text }}
+                                </span>
+                                <span class="onboarding-choice-description">
+                                    {{ goal_descriptions[goal.data] }}
+                                </span>
+                            </span>
+                            <span class="onboarding-choice-check" aria-hidden="true">✓</span>
+                        </span>
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
 
         {% for error in form.goals.errors %}
-            <p>{{ error }}</p>
+            <div class="form-error mt-3" role="alert">{{ error }}</div>
         {% endfor %}
+    </fieldset>
 
-        {{ form.submit() }}
+    <div class="onboarding-actions">
+        <a class="btn onboarding-back" href="{{ url_for('onboarding.onboarding') }}">
+            <span aria-hidden="true">←</span> Back
+        </a>
+        {{ form.submit(class="btn onboarding-primary") }}
+    </div>
+</form>
 
-    </form>
-
-</body>
-
-</html>
+{% endblock %}

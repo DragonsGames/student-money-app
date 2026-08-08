@@ -1,69 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "onboarding_base.html" %}
+{% set onboarding_step = 3 %}
+{% set onboarding_shell_class = "onboarding-shell-wide" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Income Setup</title>
-</head>
+{% block title %}Add your income | Student Money{% endblock %}
+{% block step_name %}Money coming in{% endblock %}
+{% block onboarding_title %}How do you receive money?{% endblock %}
+{% block onboarding_subtitle %}
+Add regular income, one-off payments, or anything else you want to keep track of.
+{% endblock %}
 
-<body>
+{% block onboarding_content %}
 
-    <p>Step 3 of 5</p>
+<form method="post">
+    {{ form.hidden_tag() }}
 
-    <h1>How do you receive money?</h1>
-    <p>You can add one or multiple income sources.</p>
-
-    <form method="post">
-
-        {{ form.hidden_tag() }}
-
-        <div id="income-sources">
-
-            {% for source in form.sources %}
-                <div class="income-source">
-
+    <div id="income-sources" class="dynamic-item-list">
+        {% for source in form.sources %}
+            <article class="dynamic-item-card income-source">
+                <div class="dynamic-item-header">
                     <div>
-                        {{ source.form.name.label }}
-                        {{ source.form.name(placeholder="Monthly allowance") }}
+                        <p class="dynamic-item-eyebrow">Income source</p>
+                        <h2 class="dynamic-item-title">
+                            Source <span class="item-number">{{ loop.index }}</span>
+                        </h2>
                     </div>
-
-                    <div>
-                        {{ source.form.amount.label }}
-                        {{ source.form.amount(placeholder="300.000") }}
-                    </div>
-
-                    <div>
-                        {{ source.form.frequency.label }}
-                        {{ source.form.frequency() }}
-                    </div>
-
-                    <div>
-                        {{ source.form.next_payment_date.label }}
-                        {{ source.form.next_payment_date() }}
-                    </div>
-
-                    <button type="button" class="remove-source">
+                    <button
+                        type="button"
+                        class="btn remove-item-button remove-source"
+                        aria-label="Remove income source {{ loop.index }}"
+                    >
                         Remove
                     </button>
-
                 </div>
-            {% endfor %}
 
-        </div>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        {{ source.form.name.label(class="form-label onboarding-label") }}
+                        {{ source.form.name(
+                            class="form-control onboarding-input" + (" is-invalid" if source.form.name.errors else ""),
+                            placeholder="e.g. Monthly allowance",
+                            autocomplete="off"
+                        ) }}
+                        {% for error in source.form.name.errors %}
+                            <div class="form-error" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    </div>
 
-        <button type="button" id="add-source">
-            + Add another income source
-        </button>
+                    <div class="col-12 col-md-6">
+                        {{ source.form.amount.label(class="form-label onboarding-label") }}
+                        {{ source.form.amount(
+                            class="form-control onboarding-input" + (" is-invalid" if source.form.amount.errors else ""),
+                            placeholder="300.000",
+                            inputmode="decimal"
+                        ) }}
+                        {% for error in source.form.amount.errors %}
+                            <div class="form-error" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    </div>
 
-        <br><br>
+                    <div class="col-12 col-md-6">
+                        {{ source.form.frequency.label(class="form-label onboarding-label") }}
+                        {{ source.form.frequency(
+                            class="form-select onboarding-input" + (" is-invalid" if source.form.frequency.errors else "")
+                        ) }}
+                        {% for error in source.form.frequency.errors %}
+                            <div class="form-error" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    </div>
 
-        {{ form.submit() }}
+                    <div class="col-12 col-md-6">
+                        {{ source.form.next_payment_date.label(class="form-label onboarding-label") }}
+                        {{ source.form.next_payment_date(
+                            class="form-control onboarding-input" + (" is-invalid" if source.form.next_payment_date.errors else "")
+                        ) }}
+                        {% for error in source.form.next_payment_date.errors %}
+                            <div class="form-error" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
 
-    </form>
+    <button type="button" id="add-source" class="btn add-item-button">
+        <span aria-hidden="true">+</span> Add another income source
+    </button>
 
-    <script src="{{ url_for('static', filename='onboarding-income.js') }}"></script>
+    <div class="onboarding-actions">
+        <a class="btn onboarding-back" href="{{ url_for('onboarding.onboarding_goals') }}">
+            <span aria-hidden="true">←</span> Back
+        </a>
+        {{ form.submit(class="btn onboarding-primary") }}
+    </div>
+</form>
 
-</body>
+{% endblock %}
 
-</html>
+{% block scripts %}
+<script src="{{ url_for('static', filename='onboarding-income.js') }}"></script>
+{% endblock %}

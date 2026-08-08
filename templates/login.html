@@ -1,54 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "auth_base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Log In</title>
-</head>
+{% block title %}Log in{% endblock %}
 
-<body>
 
-    <h1>Log In</h1>
+{% block auth_content %}
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+<div class="text-center mb-4">
 
-    <form method="post">
+    <h1 class="auth-title">
+        Welcome back
+    </h1>
 
-        {{ form.hidden_tag() }}
+    <p class="text-secondary">
+        Log in to continue managing your money.
+    </p>
 
-        <div>
-            {{ form.email.label }}
-            {{ form.email() }}
+</div>
 
-            {% for error in form.email.errors %}
-                <p>{{ error }}</p>
-            {% endfor %}
+
+<form method="post">
+
+    {{ form.hidden_tag() }}
+
+
+    <div class="mb-3">
+
+        {{ form.email.label(class="form-label") }}
+
+        {{ form.email(
+            class="form-control auth-input",
+            placeholder="you@example.com",
+            autocomplete="email"
+        ) }}
+
+        {% for error in form.email.errors %}
+            <div class="form-error">
+                {{ error }}
+            </div>
+        {% endfor %}
+
+    </div>
+
+
+    <div class="mb-3">
+
+        {{ form.password.label(class="form-label") }}
+
+        {{ form.password(
+            class="form-control auth-input",
+            placeholder="Your password",
+            autocomplete="current-password"
+        ) }}
+
+        {% for error in form.password.errors %}
+            <div class="form-error">
+                {{ error }}
+            </div>
+        {% endfor %}
+
+    </div>
+
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div class="form-check">
+
+            {{ form.remember(class="form-check-input") }}
+
+            {{ form.remember.label(class="form-check-label") }}
+
         </div>
 
-        <div>
-            {{ form.password.label }}
-            {{ form.password() }}
+    </div>
 
-            {% for error in form.password.errors %}
-                <p>{{ error }}</p>
-            {% endfor %}
-        </div>
 
-        <div>
-            {{ form.remember() }}
-            {{ form.remember.label }}
-        </div>
+    {{ form.submit(
+        class="btn btn-dark auth-submit w-100"
+    ) }}
 
-        {{ form.submit() }}
+</form>
 
-    </form>
 
-</body>
+<p class="auth-switch text-center mt-4 mb-0">
 
-</html>
+    Don't have an account?
+
+    <a href="{{ url_for('auth.register') }}">
+        Create one
+    </a>
+
+</p>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+
+<body>
+
+    <h1>Dashboard</h1>
+
+    <p>
+        Welcome {{ user.email }}
+    </p>
+    <form
+    method="post"
+    action="{{ url_for('auth.logout') }}"
+>
+    {{ logout_form.hidden_tag() }}
+
+    {{ logout_form.submit(
+        class="btn btn-outline-danger"
+    ) }}
+</form>
+</body>
+
+</html>

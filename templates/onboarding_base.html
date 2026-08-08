@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="onboarding-page">
+
+    <header class="onboarding-brand-bar">
+        <a class="onboarding-brand" href="{{ url_for('public.index') }}">
+            <span class="onboarding-brand-mark" aria-hidden="true">S</span>
+            Student Money
+        </a>
+    </header>
+
+    <main class="container onboarding-shell {{ onboarding_shell_class|default('') }}">
+        <section class="onboarding-card" aria-labelledby="onboarding-title">
+
+            <div class="onboarding-progress-header">
+                <span class="onboarding-step-label">
+                    Step {{ onboarding_step }} of 5
+                </span>
+                <span class="onboarding-step-name">
+                    {% block step_name %}{% endblock %}
+                </span>
+            </div>
+
+            <div
+                class="onboarding-progress"
+                role="progressbar"
+                aria-label="Onboarding progress"
+                aria-valuemin="1"
+                aria-valuemax="5"
+                aria-valuenow="{{ onboarding_step }}"
+            >
+                <span class="onboarding-progress-fill step-{{ onboarding_step }}"></span>
+            </div>
+
+            <div class="onboarding-heading">
+                <h1 id="onboarding-title" class="onboarding-title">
+                    {% block onboarding_title %}{% endblock %}
+                </h1>
+                <p class="onboarding-subtitle">
+                    {% block onboarding_subtitle %}{% endblock %}
+                </p>
+            </div>
+
+            {% block onboarding_content %}{% endblock %}
+
+        </section>
+
+        <p class="onboarding-reassurance">
+            {% block reassurance %}You can change this later.{% endblock %}
+        </p>
+    </main>
+
+</div>
+
+{% endblock %}

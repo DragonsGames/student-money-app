@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import EmailField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
-
+from datetime import date
 from wtforms import SelectField, StringField
 from wtforms import SelectMultipleField, SubmitField, widgets
 from wtforms import DateField, DecimalField
@@ -15,6 +15,15 @@ from wtforms import (
     SelectField,
     StringField,
     SubmitField
+)
+from wtforms.validators import InputRequired
+from wtforms.validators import (
+    DataRequired,
+    EqualTo,
+    Length,
+    NumberRange,
+    Optional,
+    ValidationError,
 )
 class RegistrationForm(FlaskForm):
     email = EmailField(
@@ -101,17 +110,18 @@ class OnboardingGoalsForm(FlaskForm):
         ],
         option_widget=widgets.CheckboxInput(),
         widget=widgets.ListWidget(prefix_label=False),
-        validators=[DataRequired()]
+        validators=[
+    Length(
+        min=1,
+        message="Choose at least one goal."
+        )]
     )
 
     submit = SubmitField("Continue")
 class IncomeSourceForm(Form):
     name = StringField(
         "Income source",
-        validators=[
-            DataRequired(),
-            Length(max=100)
-        ]
+        validators=[DataRequired(), Length(max=100)]
     )
 
     amount = DecimalField(
@@ -119,7 +129,11 @@ class IncomeSourceForm(Form):
         places=3,
         validators=[
             DataRequired(),
-            NumberRange(min=0.001)
+            NumberRange(
+                min=0.001,
+                max=999999999.999,
+                message="Enter a valid amount."
+            )
         ]
     )
 
@@ -129,7 +143,7 @@ class IncomeSourceForm(Form):
             ("weekly", "Weekly"),
             ("monthly", "Monthly"),
             ("one_time", "One time"),
-            ("manual", "Irregular / manual")
+            ("manual", "Irregular / manual"),
         ],
         validators=[DataRequired()]
     )
@@ -138,6 +152,12 @@ class IncomeSourceForm(Form):
         "Next payment date",
         validators=[Optional()]
     )
+
+    def validate_next_payment_date(self, field):
+        if field.data and field.data < date.today():
+            raise ValidationError(
+                "Next payment date cannot be in the past."
+            )
 
 
 class OnboardingIncomeForm(FlaskForm):
@@ -150,14 +170,17 @@ class OnboardingIncomeForm(FlaskForm):
 
 class OnboardingBalanceForm(FlaskForm):
     starting_balance = DecimalField(
-        "How much money do you currently have?",
-        places=3,
-        validators=[
-            DataRequired(),
-            NumberRange(min=0)
+    "Starting balance",
+    places=3,
+    validators=[
+        InputRequired(),
+        NumberRange(
+            min=0,
+            max=999999999.999,
+            message="Balance must be between 0 and 999,999,999.999."
+            )
         ]
     )
-
     submit = SubmitField("Continue")
 class CategoryForm(Form):
     name = StringField(
@@ -187,3 +210,5 @@ class OnboardingCategoriesForm(FlaskForm):
     )
 
     submit = SubmitField("Finish setup")
+class LogoutForm(FlaskForm):
+    submit = SubmitField("Log out")
