@@ -30,16 +30,6 @@ PLACEHOLDER_PAGES = {
         ),
         "symbol": "◇",
     },
-    "categories": {
-        "title": "Categories",
-        "subtitle": "Keep the way you organize money personal.",
-        "empty_title": "Category management is coming later",
-        "description": (
-            "The categories created during onboarding are saved. Editing "
-            "them from the app will be added in a later phase."
-        ),
-        "symbol": "◫",
-    },
     "history": {
         "title": "History",
         "subtitle": "Look back at how your money changes over time.",

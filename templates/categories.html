@@ -1,0 +1,70 @@
+{% extends "app_base.html" %}
+{% set active_page = "categories" %}
+
+{% block title %}Categories | Student Money{% endblock %}
+{% block app_page_title %}Categories{% endblock %}
+{% block app_page_subtitle %}
+Organize the income and expenses you record.
+{% endblock %}
+
+{% block app_header_actions %}
+<a class="btn app-primary-button" href="{{ url_for('categories.add_category') }}">
+    <span aria-hidden="true">+</span> Add category
+</a>
+{% endblock %}
+
+{% block app_content %}
+
+<!-- AI assistance: OpenAI Codex helped draft this category-management UI;
+reviewed and adapted by the project author. -->
+<div class="category-management-sections">
+    <section class="category-section" aria-labelledby="expense-categories-title">
+        <div class="category-section-heading">
+            <div>
+                <p class="dashboard-eyebrow">Money going out</p>
+                <h2 id="expense-categories-title">Expense categories</h2>
+            </div>
+            <span>{{ expense_categories|length }} total</span>
+        </div>
+
+        {% if expense_categories %}
+            <div class="category-grid">
+                {% for category in expense_categories %}
+                    {% include "_category_card.html" %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="category-empty-state">
+                <h3>No expense categories</h3>
+                <p>Add one before recording a new kind of expense.</p>
+                <a href="{{ url_for('categories.add_category') }}">Add category</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="category-section" aria-labelledby="income-categories-title">
+        <div class="category-section-heading">
+            <div>
+                <p class="dashboard-eyebrow">Money coming in</p>
+                <h2 id="income-categories-title">Income categories</h2>
+            </div>
+            <span>{{ income_categories|length }} total</span>
+        </div>
+
+        {% if income_categories %}
+            <div class="category-grid">
+                {% for category in income_categories %}
+                    {% include "_category_card.html" %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="category-empty-state">
+                <h3>No income categories</h3>
+                <p>Add one before recording a new source of income.</p>
+                <a href="{{ url_for('categories.add_category') }}">Add category</a>
+            </div>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

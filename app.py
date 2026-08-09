@@ -35,6 +35,7 @@ def create_app():
     # Import blueprints here to avoid circular imports
     from routes.application import application_bp
     from routes.auth import auth_bp
+    from routes.categories import categories_bp
     from routes.dashboard import dashboard_bp
     from routes.onboarding import onboarding_bp
     from routes.public import public_bp
@@ -46,6 +47,7 @@ def create_app():
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(application_bp)
     app.register_blueprint(transactions_bp)
+    app.register_blueprint(categories_bp)
 
     return app
 

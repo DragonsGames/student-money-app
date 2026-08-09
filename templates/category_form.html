@@ -1,0 +1,84 @@
+{% extends "app_base.html" %}
+{% set active_page = "categories" %}
+
+{% block title %}
+{% if mode == "edit" %}Edit{% else %}Add{% endif %} category | Student Money
+{% endblock %}
+
+{% block app_page_title %}
+{% if mode == "edit" %}Edit category{% else %}Add category{% endif %}
+{% endblock %}
+
+{% block app_page_subtitle %}
+Choose how this category appears when you record transactions.
+{% endblock %}
+
+{% block app_content %}
+
+<!-- AI assistance: OpenAI Codex helped draft this reusable category form;
+reviewed and adapted by the project author. -->
+<section class="category-management-form-card">
+    <form method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="category-management-form-grid">
+            <div class="onboarding-form-group category-name-field">
+                {{ form.name.label(class="form-label onboarding-label") }}
+                {{ form.name(
+                    class="form-control onboarding-input" + (" is-invalid" if form.name.errors else ""),
+                    placeholder="Food",
+                    autocomplete="off"
+                ) }}
+                {% for error in form.name.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group">
+                {{ form.category_type.label(class="form-label onboarding-label") }}
+                {{ form.category_type(
+                    class="form-select onboarding-input" + (" is-invalid" if form.category_type.errors else "")
+                ) }}
+                {% for error in form.category_type.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group">
+                {{ form.icon.label(class="form-label onboarding-label") }}
+                <p class="onboarding-helper">Optional. Try an emoji such as 🍔, 🎓, 💼, or 🎮.</p>
+                {{ form.icon(
+                    class="form-control onboarding-input category-management-icon-input" + (" is-invalid" if form.icon.errors else ""),
+                    placeholder="🍔",
+                    autocomplete="off"
+                ) }}
+                {% for error in form.icon.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group">
+                {{ form.color.label(class="form-label onboarding-label") }}
+                <p class="onboarding-helper">Optional. Use a hex color such as #7657ff.</p>
+                {{ form.color(
+                    class="form-control onboarding-input" + (" is-invalid" if form.color.errors else ""),
+                    placeholder="#7657ff",
+                    pattern="#[0-9A-Fa-f]{6}",
+                    autocomplete="off"
+                ) }}
+                {% for error in form.color.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="onboarding-actions category-management-form-actions">
+            <a class="btn onboarding-back" href="{{ url_for('categories.categories') }}">
+                Cancel
+            </a>
+            {{ form.submit(class="btn app-primary-button") }}
+        </div>
+    </form>
+</section>
+
+{% endblock %}

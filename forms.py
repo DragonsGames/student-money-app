@@ -26,6 +26,7 @@ from wtforms.validators import (
     Length,
     NumberRange,
     Optional,
+    Regexp,
     ValidationError,
 )
 
@@ -185,7 +186,7 @@ class OnboardingBalanceForm(FlaskForm):
         ]
     )
     submit = SubmitField("Continue")
-class CategoryForm(Form):
+class OnboardingCategoryForm(Form):
     name = StringField(
         "Category name",
         validators=[DataRequired(), Length(max=100)]
@@ -208,11 +209,57 @@ class CategoryForm(Form):
 
 class OnboardingCategoriesForm(FlaskForm):
     categories = FieldList(
-        FormField(CategoryForm),
+        FormField(OnboardingCategoryForm),
         min_entries=1
     )
 
     submit = SubmitField("Finish setup")
+
+
+# AI assistance: OpenAI Codex helped draft the category-management form and
+# safe color validation; reviewed and adapted by the project author.
+class CategoryForm(FlaskForm):
+    name = StringField(
+        "Category name",
+        validators=[
+            DataRequired(message="Enter a category name."),
+            Length(max=100),
+        ]
+    )
+
+    category_type = SelectField(
+        "Category type",
+        choices=[
+            ("expense", "Expense"),
+            ("income", "Income"),
+        ],
+        validators=[DataRequired()]
+    )
+
+    icon = StringField(
+        "Icon",
+        validators=[Optional(), Length(max=50)]
+    )
+
+    color = StringField(
+        "Color",
+        validators=[
+            Optional(),
+            Length(max=20),
+            Regexp(
+                r"\A#[0-9A-Fa-f]{6}\Z",
+                message="Use a six-digit hex color such as #7657ff."
+            ),
+        ]
+    )
+
+    submit = SubmitField("Save category")
+
+
+class DeleteCategoryForm(FlaskForm):
+    submit = SubmitField("Delete category")
+
+
 class LogoutForm(FlaskForm):
     submit = SubmitField("Log out")
 

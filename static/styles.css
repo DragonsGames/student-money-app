@@ -1863,3 +1863,257 @@ body {
         align-items: stretch;
     }
 }
+
+/* Category management
+   AI assistance: OpenAI Codex helped refine the responsive category-management
+   styling; reviewed and adapted by the project author. */
+
+.category-management-sections {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.category-section,
+.category-management-form-card {
+    padding: clamp(1.2rem, 3vw, 1.75rem);
+    border: 1px solid rgba(23, 23, 28, 0.07);
+    border-radius: 1.35rem;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 16px 44px rgba(40, 32, 77, 0.055);
+}
+
+.category-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.category-section-heading h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 750;
+}
+
+.category-section-heading > span {
+    color: #94919b;
+    font-size: 0.78rem;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+}
+
+.category-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: center;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid #ebe9ef;
+    border-top: 3px solid var(--category-accent);
+    border-radius: 1rem;
+    background: #fdfcff;
+}
+
+.category-card-identity {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.category-card-icon {
+    display: inline-flex;
+    width: 2.8rem;
+    height: 2.8rem;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.85rem;
+    color: #5542a7;
+    background: var(--soft-purple);
+    font-size: 1.25rem;
+}
+
+.category-card-copy {
+    min-width: 0;
+}
+
+.category-card-title {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.category-card-title h3 {
+    overflow: hidden;
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.category-default-badge {
+    flex: 0 0 auto;
+    padding: 0.2rem 0.45rem;
+    border-radius: 999px;
+    color: #654bca;
+    background: var(--soft-purple);
+    font-size: 0.62rem;
+    font-weight: 750;
+}
+
+.category-type-label {
+    color: #8a8791;
+    font-size: 0.74rem;
+}
+
+.category-color-swatch {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid white;
+    border-radius: 50%;
+    background: var(--category-accent);
+    box-shadow: 0 0 0 1px #dedbe5;
+}
+
+.category-card-actions {
+    display: flex;
+    grid-column: 1 / 3;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #eeecf1;
+}
+
+.category-card-actions form {
+    margin: 0;
+}
+
+.category-edit-link,
+.category-delete-button {
+    display: inline-flex;
+    min-height: 2.2rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 0.65rem;
+    border: 0;
+    border-radius: 0.65rem;
+    background: transparent;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.category-edit-link {
+    color: #6247cd;
+}
+
+.category-edit-link:hover,
+.category-edit-link:focus-visible {
+    color: #5135bd;
+    background: var(--soft-purple);
+}
+
+.category-delete-button {
+    color: #9d4450;
+}
+
+.category-delete-button:hover,
+.category-delete-button:focus-visible {
+    color: #812f3a;
+    background: #fff0f1;
+}
+
+.category-delete-button:disabled {
+    color: #aaa7b0;
+    cursor: not-allowed;
+}
+
+.category-empty-state {
+    padding: 2rem 1rem;
+    border: 1px dashed #ddd9e5;
+    border-radius: 1rem;
+    color: #85818d;
+    text-align: center;
+}
+
+.category-empty-state h3 {
+    margin: 0;
+    color: var(--text-dark);
+    font-size: 1rem;
+}
+
+.category-empty-state p {
+    margin: 0.45rem 0 0.75rem;
+    font-size: 0.84rem;
+}
+
+.category-empty-state a {
+    color: var(--purple);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.category-management-form-card {
+    max-width: 850px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.category-management-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1rem;
+}
+
+.category-management-icon-input {
+    font-size: 1.25rem;
+}
+
+.category-management-form-actions {
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 767.98px) {
+    .category-grid,
+    .category-management-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .category-section,
+    .category-management-form-card {
+        padding: 1rem;
+        border-radius: 1.1rem;
+    }
+
+    .category-section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .category-card-title {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .category-card-actions {
+        justify-content: flex-start;
+    }
+
+    .category-management-form-actions {
+        align-items: stretch;
+    }
+}

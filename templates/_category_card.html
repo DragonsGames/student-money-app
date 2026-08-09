@@ -1,0 +1,56 @@
+{% set category_color = category_colors[category.id] %}
+
+<article class="category-card" style="--category-accent: {{ category_color }};">
+    <div class="category-card-identity">
+        <span class="category-card-icon" aria-hidden="true">
+            {{ category.icon or "•" }}
+        </span>
+        <div class="category-card-copy">
+            <div class="category-card-title">
+                <h3>{{ category.name }}</h3>
+                {% if category.is_default %}
+                    <span class="category-default-badge">Starter category</span>
+                {% endif %}
+            </div>
+            <span class="category-type-label">
+                {{ category.category_type|capitalize }}
+            </span>
+        </div>
+    </div>
+
+    <span
+        class="category-color-swatch"
+        aria-label="Category color {{ category_color }}"
+        title="{{ category_color }}"
+    ></span>
+
+    <div class="category-card-actions">
+        <a
+            class="category-edit-link"
+            href="{{ url_for('categories.edit_category', category_id=category.id) }}"
+        >
+            Edit
+        </a>
+
+        {% if category.id in used_category_ids %}
+            <button
+                type="button"
+                class="category-delete-button"
+                disabled
+                title="This category is used by existing transactions."
+            >
+                Delete
+            </button>
+        {% else %}
+            <form
+                method="post"
+                action="{{ url_for('categories.delete_category', category_id=category.id) }}"
+            >
+                {{ delete_form.csrf_token(id="delete-category-csrf-" ~ category.id) }}
+                <button type="submit" class="category-delete-button">
+                    Delete
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</article>
