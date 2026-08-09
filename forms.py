@@ -483,3 +483,123 @@ class HistoryFilterForm(Form):
             raise ValidationError(
                 "The start date must be on or before the end date."
             )
+
+
+# AI assistance: OpenAI Codex helped draft these separate settings and
+# income-source management forms; reviewed and adapted by the project author.
+class ProfileSettingsForm(FlaskForm):
+    display_name = StringField(
+        "Display name",
+        validators=[Optional(), Length(max=100)]
+    )
+
+    submit = SubmitField("Save profile")
+
+
+class MoneySettingsForm(FlaskForm):
+    currency = SelectField(
+        "Currency",
+        choices=[
+            ("TND", "Tunisian Dinar (TND)"),
+            ("USD", "US Dollar (USD)"),
+            ("EUR", "Euro (EUR)"),
+            ("CAD", "Canadian Dollar (CAD)"),
+        ],
+        validators=[DataRequired()]
+    )
+
+    starting_balance = DecimalField(
+        "Starting balance",
+        places=3,
+        validators=[
+            InputRequired(),
+            NumberRange(
+                min=Decimal("0.000"),
+                max=Decimal("999999999.999"),
+                message="Enter a balance between 0 and 999,999,999.999."
+            )
+        ]
+    )
+
+    budget_period = SelectField(
+        "Budget period",
+        choices=[
+            ("weekly", "Weekly"),
+            ("monthly", "Monthly"),
+        ],
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField("Save money settings")
+
+
+class GoalsSettingsForm(FlaskForm):
+    goals = SelectMultipleField(
+        "What do you want to improve?",
+        choices=[
+            ("save_more", "Save more"),
+            ("stop_overspending", "Stop overspending"),
+            ("understand_spending", "Understand where my money goes"),
+            ("better_habits", "Build better money habits"),
+            ("track_money", "Just track my money"),
+            ("save_for_something", "Save for something specific"),
+        ],
+        option_widget=widgets.CheckboxInput(),
+        widget=widgets.ListWidget(prefix_label=False),
+        validators=[
+            Length(min=1, message="Choose at least one goal.")
+        ]
+    )
+
+    submit = SubmitField("Save money goals")
+
+
+class IncomeSourceSettingsForm(FlaskForm):
+    name = StringField(
+        "Income source",
+        validators=[
+            DataRequired(message="Enter an income source name."),
+            Length(max=100),
+        ]
+    )
+
+    amount = DecimalField(
+        "Amount",
+        places=3,
+        validators=[
+            InputRequired(),
+            NumberRange(
+                min=Decimal("0.001"),
+                max=Decimal("999999999.999"),
+                message="Enter an amount between 0.001 and 999,999,999.999."
+            )
+        ]
+    )
+
+    frequency = SelectField(
+        "How often?",
+        choices=[
+            ("weekly", "Weekly"),
+            ("monthly", "Monthly"),
+            ("one_time", "One time"),
+            ("manual", "Irregular / manual"),
+        ],
+        validators=[DataRequired()]
+    )
+
+    next_payment_date = DateField(
+        "Next payment date",
+        validators=[Optional()]
+    )
+
+    submit = SubmitField("Save income source")
+
+    def validate_next_payment_date(self, field):
+        if field.data and field.data < date.today():
+            raise ValidationError(
+                "Next payment date cannot be in the past."
+            )
+
+
+class DeleteIncomeSourceForm(FlaskForm):
+    submit = SubmitField("Delete income source")

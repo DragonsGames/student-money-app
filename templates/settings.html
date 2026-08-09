@@ -1,0 +1,269 @@
+{% extends "app_base.html" %}
+{% set active_page = "settings" %}
+
+{% set goal_descriptions = {
+    "save_more": "Make steady progress toward a stronger cushion.",
+    "stop_overspending": "Stay aware before small purchases add up.",
+    "understand_spending": "See where your money is really going.",
+    "better_habits": "Build routines that feel realistic and repeatable.",
+    "track_money": "Keep a simple, reliable record of your money.",
+    "save_for_something": "Turn a specific plan into a reachable target."
+} %}
+
+{% set frequency_labels = {
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "one_time": "One time",
+    "manual": "Irregular / manual"
+} %}
+
+{% block title %}Settings | Student Money{% endblock %}
+{% block app_page_title %}Profile & settings{% endblock %}
+{% block app_page_subtitle %}
+Review and update the choices you made when setting up your account.
+{% endblock %}
+
+{% block app_content %}
+
+<!-- AI assistance: OpenAI Codex helped draft this multi-section Settings UI;
+reviewed and adapted by the project author. -->
+<div class="settings-grid">
+    <section class="settings-card" aria-labelledby="profile-settings-title">
+        <div class="settings-section-heading">
+            <p class="dashboard-eyebrow">Profile</p>
+            <h2 id="profile-settings-title">How the app addresses you</h2>
+        </div>
+
+        <form method="post" action="{{ url_for('settings.update_profile') }}">
+            {{ profile_form.csrf_token(id="profile-settings-csrf") }}
+
+            <div class="onboarding-form-group">
+                {{ profile_form.display_name.label(class="form-label onboarding-label") }}
+                <p class="onboarding-helper">Optional. Leave blank to use your email.</p>
+                {{ profile_form.display_name(
+                    class="form-control onboarding-input" + (" is-invalid" if profile_form.display_name.errors else ""),
+                    placeholder="e.g. Maya",
+                    autocomplete="name"
+                ) }}
+                {% for error in profile_form.display_name.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group">
+                <label class="form-label onboarding-label" for="settings-email">
+                    Login email
+                </label>
+                <p class="onboarding-helper">Your email cannot be changed here.</p>
+                <input
+                    id="settings-email"
+                    class="form-control onboarding-input settings-readonly-input"
+                    type="email"
+                    value="{{ current_user.email }}"
+                    readonly
+                    aria-readonly="true"
+                >
+            </div>
+
+            <div class="settings-form-actions">
+                {{ profile_form.submit(
+                    id="profile-settings-submit",
+                    class="btn app-primary-button"
+                ) }}
+            </div>
+        </form>
+    </section>
+
+    <section class="settings-card" aria-labelledby="money-settings-title">
+        <div class="settings-section-heading">
+            <p class="dashboard-eyebrow">Money settings</p>
+            <h2 id="money-settings-title">Your financial starting point</h2>
+        </div>
+
+        <form method="post" action="{{ url_for('settings.update_money') }}">
+            {{ money_form.csrf_token(id="money-settings-csrf") }}
+
+            <div class="settings-money-grid">
+                <div class="onboarding-form-group">
+                    {{ money_form.currency.label(class="form-label onboarding-label") }}
+                    <p class="onboarding-helper">Display unit only; amounts are not converted.</p>
+                    {{ money_form.currency(
+                        class="form-select onboarding-input" + (" is-invalid" if money_form.currency.errors else "")
+                    ) }}
+                    {% for error in money_form.currency.errors %}
+                        <div class="form-error" role="alert">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="onboarding-form-group">
+                    {{ money_form.starting_balance.label(class="form-label onboarding-label") }}
+                    <p class="onboarding-helper">
+                        Money available before your tracked transactions.
+                    </p>
+                    {{ money_form.starting_balance(
+                        class="form-control onboarding-input" + (" is-invalid" if money_form.starting_balance.errors else ""),
+                        inputmode="decimal"
+                    ) }}
+                    {% for error in money_form.starting_balance.errors %}
+                        <div class="form-error" role="alert">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="onboarding-form-group settings-money-full-field">
+                    {{ money_form.budget_period.label(class="form-label onboarding-label") }}
+                    <p class="onboarding-helper">
+                        This is the same period used on your Budgets page.
+                    </p>
+                    {{ money_form.budget_period(
+                        class="form-select onboarding-input" + (" is-invalid" if money_form.budget_period.errors else "")
+                    ) }}
+                    {% for error in money_form.budget_period.errors %}
+                        <div class="form-error" role="alert">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <p class="settings-information-note">
+                Updating the starting balance changes the calculated current balance,
+                but does not create or edit a transaction.
+            </p>
+
+            <div class="settings-form-actions">
+                {{ money_form.submit(
+                    id="money-settings-submit",
+                    class="btn app-primary-button"
+                ) }}
+            </div>
+        </form>
+    </section>
+
+    <section class="settings-card settings-card-full" aria-labelledby="goals-settings-title">
+        <div class="settings-section-heading">
+            <p class="dashboard-eyebrow">Your money goals</p>
+            <h2 id="goals-settings-title">What do you want to improve?</h2>
+            <span>
+                These preferences personalize your experience. Monetary targets
+                remain separate on the Savings page.
+            </span>
+        </div>
+
+        <form method="post" action="{{ url_for('settings.update_goals') }}">
+            {{ goals_form.csrf_token(id="goals-settings-csrf") }}
+
+            <fieldset class="onboarding-fieldset">
+                <legend class="visually-hidden">Money goals</legend>
+                <div class="settings-goal-grid">
+                    {% for goal in goals_form.goals %}
+                        <label class="onboarding-choice" for="{{ goal.id }}">
+                            {{ goal(class="onboarding-choice-input") }}
+                            <span class="onboarding-choice-card">
+                                <span class="onboarding-choice-copy">
+                                    <span class="onboarding-choice-title">
+                                        {{ goal.label.text }}
+                                    </span>
+                                    <span class="onboarding-choice-description">
+                                        {{ goal_descriptions[goal.data] }}
+                                    </span>
+                                </span>
+                                <span class="onboarding-choice-check" aria-hidden="true">✓</span>
+                            </span>
+                        </label>
+                    {% endfor %}
+                </div>
+
+                {% for error in goals_form.goals.errors %}
+                    <div class="form-error mt-3" role="alert">{{ error }}</div>
+                {% endfor %}
+            </fieldset>
+
+            <div class="settings-form-actions">
+                {{ goals_form.submit(
+                    id="goals-settings-submit",
+                    class="btn app-primary-button"
+                ) }}
+            </div>
+        </form>
+    </section>
+
+    <section class="settings-card settings-card-full" aria-labelledby="income-settings-title">
+        <div class="settings-income-heading">
+            <div class="settings-section-heading">
+                <p class="dashboard-eyebrow">Income sources</p>
+                <h2 id="income-settings-title">Money you expect to receive</h2>
+                <span>
+                    Income sources are planning information. They do not add to
+                    your balance or create transactions automatically.
+                </span>
+            </div>
+            <a class="btn app-primary-button" href="{{ url_for('settings.add_income_source') }}">
+                <span aria-hidden="true">+</span> Add income source
+            </a>
+        </div>
+
+        {% if income_sources %}
+            <div class="settings-income-list">
+                {% for source in income_sources %}
+                    <article class="settings-income-source">
+                        <div class="settings-income-identity">
+                            <span class="settings-income-symbol" aria-hidden="true">↗</span>
+                            <div>
+                                <strong>{{ source.name }}</strong>
+                                <span>{{ frequency_labels[source.frequency] }}</span>
+                            </div>
+                        </div>
+
+                        <div class="settings-income-details">
+                            <strong>
+                                {{ "{:,.3f}".format(source.amount) }} {{ currency }}
+                            </strong>
+                            {% if source.next_payment_date %}
+                                <span>
+                                    Next: {{ source.next_payment_date.strftime("%b %d, %Y") }}
+                                </span>
+                            {% else %}
+                                <span>No payment date set</span>
+                            {% endif %}
+                        </div>
+
+                        <span class="settings-recurring-badge">
+                            {% if source.is_recurring %}Recurring{% else %}Non-recurring{% endif %}
+                        </span>
+
+                        <div class="settings-income-actions">
+                            <a
+                                class="settings-edit-link"
+                                href="{{ url_for('settings.edit_income_source', source_id=source.id) }}"
+                            >
+                                Edit
+                            </a>
+                            <form
+                                method="post"
+                                action="{{ url_for('settings.delete_income_source', source_id=source.id) }}"
+                            >
+                                {{ delete_form.csrf_token(id="delete-income-source-csrf-" ~ source.id) }}
+                                <button type="submit" class="settings-delete-button">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+            <p class="settings-delete-note">
+                Deleting an income source removes only this planning record. It
+                does not reverse or delete any transaction.
+            </p>
+        {% else %}
+            <div class="empty-state settings-income-empty">
+                <span class="empty-state-symbol" aria-hidden="true">↗</span>
+                <h3>No income sources yet</h3>
+                <p>Add an informational source to keep expected money visible.</p>
+                <a class="btn app-primary-button" href="{{ url_for('settings.add_income_source') }}">
+                    Add income source
+                </a>
+            </div>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

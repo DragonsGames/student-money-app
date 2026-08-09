@@ -33,7 +33,6 @@ def create_app():
     login_manager.login_view = "auth.login"
 
     # Import blueprints here to avoid circular imports
-    from routes.application import application_bp
     from routes.auth import auth_bp
     from routes.budgets import budgets_bp
     from routes.categories import categories_bp
@@ -42,6 +41,7 @@ def create_app():
     from routes.onboarding import onboarding_bp
     from routes.public import public_bp
     from routes.savings import savings_bp
+    from routes.settings import settings_bp
     from routes.transactions import transactions_bp
 
     app.register_blueprint(public_bp)
@@ -49,11 +49,11 @@ def create_app():
     app.register_blueprint(onboarding_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(history_bp)
-    app.register_blueprint(application_bp)
     app.register_blueprint(transactions_bp)
     app.register_blueprint(categories_bp)
     app.register_blueprint(budgets_bp)
     app.register_blueprint(savings_bp)
+    app.register_blueprint(settings_bp)
 
     return app
 

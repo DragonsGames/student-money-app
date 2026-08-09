@@ -100,7 +100,7 @@ layout; reviewed and adapted by the project author. -->
 
                     <a
                         class="app-account-link{% if active_page == 'settings' %} active{% endif %}"
-                        href="{{ url_for('application.placeholder', page_key='settings') }}"
+                        href="{{ url_for('settings.settings') }}"
                         {% if active_page == 'settings' %}aria-current="page"{% endif %}
                     >
                         <span aria-hidden="true">⚙</span>

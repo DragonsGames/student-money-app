@@ -1,0 +1,86 @@
+{% extends "app_base.html" %}
+{% set active_page = "settings" %}
+
+{% block title %}
+{% if mode == "edit" %}Edit{% else %}Add{% endif %} income source | Student Money
+{% endblock %}
+
+{% block app_page_title %}
+{% if mode == "edit" %}Edit income source{% else %}Add income source{% endif %}
+{% endblock %}
+
+{% block app_page_subtitle %}
+Keep expected income visible without changing your transaction balance.
+{% endblock %}
+
+{% block app_content %}
+
+<!-- AI assistance: OpenAI Codex helped draft this reusable IncomeSource form;
+reviewed and adapted by the project author. -->
+<section class="settings-income-form-card">
+    <form method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="settings-income-form-grid">
+            <div class="onboarding-form-group settings-income-name-field">
+                {{ form.name.label(class="form-label onboarding-label") }}
+                {{ form.name(
+                    class="form-control onboarding-input" + (" is-invalid" if form.name.errors else ""),
+                    placeholder="e.g. Monthly allowance",
+                    autocomplete="off"
+                ) }}
+                {% for error in form.name.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group">
+                {{ form.amount.label(class="form-label onboarding-label") }}
+                <p class="onboarding-helper">A positive amount in {{ currency }}.</p>
+                {{ form.amount(
+                    class="form-control onboarding-input" + (" is-invalid" if form.amount.errors else ""),
+                    placeholder="300.000",
+                    inputmode="decimal"
+                ) }}
+                {% for error in form.amount.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group">
+                {{ form.frequency.label(class="form-label onboarding-label") }}
+                {{ form.frequency(
+                    class="form-select onboarding-input" + (" is-invalid" if form.frequency.errors else "")
+                ) }}
+                {% for error in form.frequency.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group settings-income-date-field">
+                {{ form.next_payment_date.label(class="form-label onboarding-label") }}
+                <p class="onboarding-helper">Optional. Use today or a future date.</p>
+                {{ form.next_payment_date(
+                    class="form-control onboarding-input" + (" is-invalid" if form.next_payment_date.errors else "")
+                ) }}
+                {% for error in form.next_payment_date.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <p class="settings-information-note">
+            This source is scheduling information only. Saving it will not add
+            money to your current balance or create an income transaction.
+        </p>
+
+        <div class="onboarding-actions settings-income-form-actions">
+            <a class="btn onboarding-back" href="{{ url_for('settings.settings') }}">
+                Cancel
+            </a>
+            {{ form.submit(class="btn app-primary-button") }}
+        </div>
+    </form>
+</section>
+
+{% endblock %}
