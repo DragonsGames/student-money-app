@@ -39,6 +39,10 @@ class User(UserMixin, db.Model):
         back_populates="user",
         cascade="all, delete-orphan"
     )
+    savings_goals: Mapped[list["SavingsGoal"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -307,6 +311,59 @@ class Budget(db.Model):
 
     category: Mapped["Category"] = relationship(
         back_populates="budget"
+    )
+
+
+# AI assistance: OpenAI Codex assisted with drafting the monetary SavingsGoal
+# model and constraints; reviewed and adapted by the project author.
+class SavingsGoal(db.Model):
+    __tablename__ = "savings_goals"
+    __table_args__ = (
+        CheckConstraint(
+            "target_amount > 0",
+            name="ck_savings_goals_target_positive"
+        ),
+        CheckConstraint(
+            "saved_amount >= 0",
+            name="ck_savings_goals_saved_nonnegative"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False
+    )
+
+    name: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False
+    )
+
+    target_amount: Mapped[Decimal] = mapped_column(
+        Numeric(12, 3),
+        nullable=False
+    )
+
+    saved_amount: Mapped[Decimal] = mapped_column(
+        Numeric(12, 3),
+        nullable=False,
+        default=Decimal("0.000"),
+        server_default="0.000"
+    )
+
+    target_date: Mapped[date | None] = mapped_column(
+        Date,
+        nullable=True
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now()
+    )
+
+    user: Mapped["User"] = relationship(
+        back_populates="savings_goals"
     )
 
 

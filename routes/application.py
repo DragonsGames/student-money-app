@@ -11,15 +11,6 @@ application_bp = Blueprint("application", __name__)
 # AI assistance: OpenAI Codex helped organize these authenticated placeholder
 # destinations; reviewed and adapted by the project author.
 PLACEHOLDER_PAGES = {
-    "savings": {
-        "title": "Savings",
-        "subtitle": "Keep future goals visible and achievable.",
-        "empty_title": "Savings tools are coming later",
-        "description": (
-            "This space will support savings plans in a future phase."
-        ),
-        "symbol": "◇",
-    },
     "history": {
         "title": "History",
         "subtitle": "Look back at how your money changes over time.",

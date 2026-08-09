@@ -1,0 +1,87 @@
+{% set goal = item["goal"] %}
+
+<article class="savings-goal-card{% if item['completed'] %} savings-goal-complete{% elif item['overdue'] %} savings-goal-overdue{% endif %}">
+    <div class="savings-goal-heading">
+        <div>
+            <p class="dashboard-eyebrow">Savings goal</p>
+            <h3>{{ goal.name }}</h3>
+        </div>
+
+        {% if item["completed"] %}
+            <span class="savings-status-badge savings-status-complete">
+                Target reached
+            </span>
+        {% elif item["overdue"] %}
+            <span class="savings-status-badge savings-status-overdue">
+                Overdue
+            </span>
+        {% endif %}
+    </div>
+
+    <p class="savings-goal-amount">
+        <strong>{{ "{:,.3f}".format(goal.saved_amount) }}</strong>
+        <span>/ {{ "{:,.3f}".format(goal.target_amount) }} {{ currency }}</span>
+    </p>
+
+    <div
+        class="savings-progress-track{% if item['completed'] %} savings-progress-complete{% endif %}"
+        role="progressbar"
+        aria-valuenow="{{ item['visual_percentage'] }}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuetext="{{ '{:,.1f}'.format(item['percentage']) }} percent saved"
+    >
+        <span style="width: {{ item['visual_percentage'] }}%;"></span>
+    </div>
+
+    <div class="savings-goal-metrics">
+        <strong>{{ "{:,.1f}".format(item["percentage"]) }}% saved</strong>
+        {% if item["completed"] %}
+            {% if item["over_target"] > 0 %}
+                <span>
+                    {{ "{:,.3f}".format(item["over_target"]) }} {{ currency }} beyond target
+                </span>
+            {% else %}
+                <span>Target reached</span>
+            {% endif %}
+        {% else %}
+            <span>
+                {{ "{:,.3f}".format(item["remaining"]) }} {{ currency }} remaining
+            </span>
+        {% endif %}
+    </div>
+
+    {% if goal.target_date %}
+        <p class="savings-target-date{% if item['overdue'] %} savings-target-date-overdue{% endif %}">
+            Target date: {{ goal.target_date.strftime("%b %d, %Y") }}
+        </p>
+    {% endif %}
+
+    <div class="savings-goal-actions">
+        <a
+            class="savings-action-link"
+            href="{{ url_for('savings.update_amount', goal_id=goal.id) }}"
+        >
+            Add / withdraw
+        </a>
+        <a
+            class="savings-edit-link"
+            href="{{ url_for('savings.edit_goal', goal_id=goal.id) }}"
+        >
+            Edit
+        </a>
+        <form
+            method="post"
+            action="{{ url_for('savings.delete_goal', goal_id=goal.id) }}"
+        >
+            {{ delete_form.csrf_token(id="delete-savings-csrf-" ~ goal.id) }}
+            <button
+                type="submit"
+                class="savings-delete-button"
+                title="Delete this goal record without changing transactions or balances."
+            >
+                Delete
+            </button>
+        </form>
+    </div>
+</article>

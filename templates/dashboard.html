@@ -110,8 +110,26 @@ reviewed and adapted by the project author. -->
         <article class="summary-card">
             <span class="summary-symbol summary-symbol-savings" aria-hidden="true">◇</span>
             <p>Savings</p>
-            <strong>Not set up yet</strong>
-            <small>Savings tools are coming later</small>
+            <!-- AI assistance: OpenAI Codex helped connect this dashboard card
+            to real savings-goal progress; reviewed by the project author. -->
+            {% if savings_summary["goals"] %}
+                <strong>
+                    {{ "{:,.3f}".format(savings_summary.total_saved) }} /
+                    {{ "{:,.3f}".format(savings_summary.total_target) }}
+                    {{ currency }}
+                </strong>
+                <small>
+                    {{ "{:,.1f}".format(savings_summary.overall_percentage) }}% saved ·
+                    {{ savings_summary.completed_count }} completed
+                </small>
+            {% else %}
+                <strong>No savings goals yet</strong>
+                <small>
+                    <a class="summary-card-link" href="{{ url_for('savings.add_goal') }}">
+                        Create a savings goal
+                    </a>
+                </small>
+            {% endif %}
         </article>
     </div>
 </section>

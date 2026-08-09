@@ -1,0 +1,68 @@
+{% extends "app_base.html" %}
+{% set active_page = "savings" %}
+
+{% block title %}Update {{ goal.name }} savings | Student Money{% endblock %}
+{% block app_page_title %}Update saved amount{% endblock %}
+{% block app_page_subtitle %}
+Add to or withdraw from the progress tracked for {{ goal.name }}.
+{% endblock %}
+
+{% block app_content %}
+
+<!-- AI assistance: OpenAI Codex helped draft this savings adjustment UI;
+reviewed and adapted by the project author. -->
+<section class="savings-form-card savings-amount-card">
+    <div class="savings-current-amount">
+        <p class="dashboard-eyebrow">Currently saved</p>
+        <strong>
+            {{ "{:,.3f}".format(goal.saved_amount) }}
+            <span>{{ currency }}</span>
+        </strong>
+        <small>
+            Target: {{ "{:,.3f}".format(goal.target_amount) }} {{ currency }}
+        </small>
+    </div>
+
+    <form method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="savings-form-grid">
+            <div class="onboarding-form-group">
+                {{ form.action.label(class="form-label onboarding-label") }}
+                {{ form.action(
+                    class="form-select onboarding-input" + (" is-invalid" if form.action.errors else "")
+                ) }}
+                {% for error in form.action.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="onboarding-form-group">
+                {{ form.amount.label(class="form-label onboarding-label") }}
+                <p class="onboarding-helper">A positive amount in {{ currency }}.</p>
+                {{ form.amount(
+                    class="form-control onboarding-input" + (" is-invalid" if form.amount.errors else ""),
+                    placeholder="100.000",
+                    inputmode="decimal"
+                ) }}
+                {% for error in form.amount.errors %}
+                    <div class="form-error" role="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <p class="savings-ledger-note">
+            This updates goal progress only. It does not create a transaction or
+            change your available balance.
+        </p>
+
+        <div class="onboarding-actions savings-form-actions">
+            <a class="btn onboarding-back" href="{{ url_for('savings.savings') }}">
+                Cancel
+            </a>
+            {{ form.submit(class="btn app-primary-button") }}
+        </div>
+    </form>
+</section>
+
+{% endblock %}

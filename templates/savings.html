@@ -1,0 +1,89 @@
+{% extends "app_base.html" %}
+{% set active_page = "savings" %}
+
+{% block title %}Savings goals | Student Money{% endblock %}
+{% block app_page_title %}Savings goals{% endblock %}
+{% block app_page_subtitle %}
+Track money you have earmarked for personal targets without changing your transaction balance.
+{% endblock %}
+
+{% block app_header_actions %}
+<a class="btn app-primary-button" href="{{ url_for('savings.add_goal') }}">
+    <span aria-hidden="true">+</span> Add savings goal
+</a>
+{% endblock %}
+
+{% block app_content %}
+
+<!-- AI assistance: OpenAI Codex helped draft this savings-goal UI;
+reviewed and adapted by the project author. -->
+<section class="savings-summary-grid" aria-label="Savings summary">
+    <article class="savings-summary-card savings-summary-primary">
+        <p>Total saved</p>
+        <strong>
+            {{ "{:,.3f}".format(savings_summary.total_saved) }}
+            <span>{{ currency }}</span>
+        </strong>
+        <small>Progress earmarked across all goals</small>
+    </article>
+
+    <article class="savings-summary-card">
+        <p>Total target</p>
+        <strong>
+            {{ "{:,.3f}".format(savings_summary.total_target) }}
+            <span>{{ currency }}</span>
+        </strong>
+        <small>{{ "{:,.1f}".format(savings_summary.overall_percentage) }}% saved overall</small>
+    </article>
+
+    <article class="savings-summary-card">
+        <p>Remaining</p>
+        <strong>
+            {{ "{:,.3f}".format(savings_summary.overall_remaining) }}
+            <span>{{ currency }}</span>
+        </strong>
+        <small>Overfunded goals do not reduce other goals</small>
+    </article>
+
+    <article class="savings-summary-card">
+        <p>Completed goals</p>
+        <strong>{{ savings_summary.completed_count }}</strong>
+        <small>{{ savings_summary.active_count }} still active</small>
+    </article>
+</section>
+
+<section class="savings-list-panel" aria-labelledby="savings-goals-title">
+    <div class="savings-list-heading">
+        <div>
+            <p class="dashboard-eyebrow">Your targets</p>
+            <h2 id="savings-goals-title">Goal progress</h2>
+        </div>
+        <span>{{ savings_summary["goals"]|length }} total</span>
+    </div>
+
+    {% if savings_summary["goals"] %}
+        <div class="savings-goal-grid">
+            {% for item in savings_summary["goals"] %}
+                {% include "_savings_goal_card.html" %}
+            {% endfor %}
+        </div>
+        <p class="savings-delete-warning">
+            Deleting a goal removes only its tracking record. It does not alter
+            transactions, balances, categories, or budgets.
+        </p>
+    {% else %}
+        <div class="empty-state savings-empty-state">
+            <span class="empty-state-symbol" aria-hidden="true">◇</span>
+            <h3>No savings goals yet</h3>
+            <p>
+                Create a target to track money you have set aside for something
+                important to you.
+            </p>
+            <a class="btn app-primary-button" href="{{ url_for('savings.add_goal') }}">
+                Create a savings goal
+            </a>
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

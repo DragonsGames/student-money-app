@@ -40,6 +40,7 @@ def create_app():
     from routes.dashboard import dashboard_bp
     from routes.onboarding import onboarding_bp
     from routes.public import public_bp
+    from routes.savings import savings_bp
     from routes.transactions import transactions_bp
 
     app.register_blueprint(public_bp)
@@ -50,6 +51,7 @@ def create_app():
     app.register_blueprint(transactions_bp)
     app.register_blueprint(categories_bp)
     app.register_blueprint(budgets_bp)
+    app.register_blueprint(savings_bp)
 
     return app
 

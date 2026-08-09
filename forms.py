@@ -305,6 +305,68 @@ class DeleteBudgetForm(FlaskForm):
     submit = SubmitField("Delete budget")
 
 
+# AI assistance: OpenAI Codex helped draft the monetary savings-goal and
+# progress-adjustment forms; reviewed and adapted by the project author.
+class SavingsGoalForm(FlaskForm):
+    name = StringField(
+        "Goal name",
+        validators=[
+            DataRequired(message="Enter a savings goal name."),
+            Length(max=100),
+        ]
+    )
+
+    target_amount = DecimalField(
+        "Target amount",
+        places=3,
+        validators=[
+            InputRequired(),
+            NumberRange(
+                min=Decimal("0.001"),
+                max=Decimal("999999999.999"),
+                message="Enter an amount between 0.001 and 999,999,999.999."
+            )
+        ]
+    )
+
+    target_date = DateField(
+        "Target date",
+        validators=[Optional()]
+    )
+
+    submit = SubmitField("Save goal")
+
+
+class SavingsAmountForm(FlaskForm):
+    action = SelectField(
+        "Action",
+        choices=[
+            ("add", "Add to savings"),
+            ("withdraw", "Withdraw from savings"),
+        ],
+        validators=[DataRequired()]
+    )
+
+    amount = DecimalField(
+        "Amount",
+        places=3,
+        validators=[
+            InputRequired(),
+            NumberRange(
+                min=Decimal("0.001"),
+                max=Decimal("999999999.999"),
+                message="Enter an amount between 0.001 and 999,999,999.999."
+            )
+        ]
+    )
+
+    submit = SubmitField("Update savings")
+
+
+class DeleteSavingsGoalForm(FlaskForm):
+    submit = SubmitField("Delete savings goal")
+
+
 class LogoutForm(FlaskForm):
     submit = SubmitField("Log out")
 

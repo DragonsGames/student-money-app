@@ -8,6 +8,7 @@ from models import Transaction
 from routes.guards import onboarding_complete_required
 from services.budgets import get_budget_summary
 from services.finance import ZERO, get_financial_summary
+from services.savings import get_savings_summary
 
 
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -55,6 +56,7 @@ def dashboard():
             current_user.id,
             settings.budget_period
         ),
+        savings_summary=get_savings_summary(current_user.id),
         recent_transactions=recent_transactions,
         logout_form=LogoutForm(),
     )
