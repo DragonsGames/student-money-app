@@ -1,15 +1,15 @@
 {% extends "app_base.html" %}
 {% set active_page = "categories" %}
 
-{% block title %}Categories | Student Money{% endblock %}
-{% block app_page_title %}Categories{% endblock %}
+{% block title %}{{ t('Categories') }} | ILI pika{% endblock %}
+{% block app_page_title %}{{ t('Categories') }}{% endblock %}
 {% block app_page_subtitle %}
-Organize the income and expenses you record.
+{{ t('Organize the income and expenses you record.') }}
 {% endblock %}
 
 {% block app_header_actions %}
 <a class="btn app-primary-button" href="{{ url_for('categories.add_category') }}">
-    <span aria-hidden="true">+</span> Add category
+    <span aria-hidden="true">+</span> {{ t('Add category') }}
 </a>
 {% endblock %}
 
@@ -21,10 +21,10 @@ reviewed and adapted by the project author. -->
     <section class="category-section" aria-labelledby="expense-categories-title">
         <div class="category-section-heading">
             <div>
-                <p class="dashboard-eyebrow">Money going out</p>
-                <h2 id="expense-categories-title">Expense categories</h2>
+                <p class="dashboard-eyebrow">{{ t('Money going out') }}</p>
+                <h2 id="expense-categories-title">{{ t('Expense categories') }}</h2>
             </div>
-            <span>{{ expense_categories|length }} total</span>
+            <span>{{ t('{count} total', count=expense_categories|length) }}</span>
         </div>
 
         {% if expense_categories %}
@@ -35,9 +35,9 @@ reviewed and adapted by the project author. -->
             </div>
         {% else %}
             <div class="category-empty-state">
-                <h3>No expense categories</h3>
-                <p>Add one before recording a new kind of expense.</p>
-                <a href="{{ url_for('categories.add_category') }}">Add category</a>
+                <h3>{{ t('No expense categories') }}</h3>
+                <p>{{ t('Add one before recording a new kind of expense.') }}</p>
+                <a href="{{ url_for('categories.add_category') }}">{{ t('Add category') }}</a>
             </div>
         {% endif %}
     </section>
@@ -45,10 +45,10 @@ reviewed and adapted by the project author. -->
     <section class="category-section" aria-labelledby="income-categories-title">
         <div class="category-section-heading">
             <div>
-                <p class="dashboard-eyebrow">Money coming in</p>
-                <h2 id="income-categories-title">Income categories</h2>
+                <p class="dashboard-eyebrow">{{ t('Money coming in') }}</p>
+                <h2 id="income-categories-title">{{ t('Income categories') }}</h2>
             </div>
-            <span>{{ income_categories|length }} total</span>
+            <span>{{ t('{count} total', count=income_categories|length) }}</span>
         </div>
 
         {% if income_categories %}
@@ -59,9 +59,9 @@ reviewed and adapted by the project author. -->
             </div>
         {% else %}
             <div class="category-empty-state">
-                <h3>No income categories</h3>
-                <p>Add one before recording a new source of income.</p>
-                <a href="{{ url_for('categories.add_category') }}">Add category</a>
+                <h3>{{ t('No income categories') }}</h3>
+                <p>{{ t('Add one before recording a new source of income.') }}</p>
+                <a href="{{ url_for('categories.add_category') }}">{{ t('Add category') }}</a>
             </div>
         {% endif %}
     </section>

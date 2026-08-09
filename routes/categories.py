@@ -204,6 +204,8 @@ def edit_category(category_id):
             )
             flash("That category already exists.", "danger")
         else:
+            if category.is_default and name != category.name:
+                category.is_default = False
             category.name = name
             category.category_type = form.category_type.data
             category.icon = _clean_optional(form.icon.data)

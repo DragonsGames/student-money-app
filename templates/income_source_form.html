@@ -2,15 +2,15 @@
 {% set active_page = "settings" %}
 
 {% block title %}
-{% if mode == "edit" %}Edit{% else %}Add{% endif %} income source | Student Money
+{% if mode == "edit" %}{{ t('Edit') }}{% else %}{{ t('Add') }}{% endif %} {{ t('income source') }} | ILI pika
 {% endblock %}
 
 {% block app_page_title %}
-{% if mode == "edit" %}Edit income source{% else %}Add income source{% endif %}
+{% if mode == "edit" %}{{ t('Edit income source') }}{% else %}{{ t('Add income source') }}{% endif %}
 {% endblock %}
 
 {% block app_page_subtitle %}
-Keep expected income visible without changing your transaction balance.
+{{ t('Keep expected income visible without changing your transaction balance.') }}
 {% endblock %}
 
 {% block app_content %}
@@ -26,24 +26,24 @@ reviewed and adapted by the project author. -->
                 {{ form.name.label(class="form-label onboarding-label") }}
                 {{ form.name(
                     class="form-control onboarding-input" + (" is-invalid" if form.name.errors else ""),
-                    placeholder="e.g. Monthly allowance",
+                    placeholder=t('e.g. Monthly allowance'),
                     autocomplete="off"
                 ) }}
                 {% for error in form.name.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
 
             <div class="onboarding-form-group">
                 {{ form.amount.label(class="form-label onboarding-label") }}
-                <p class="onboarding-helper">A positive amount in {{ currency }}.</p>
+                <p class="onboarding-helper">{{ t('A positive amount in {currency}.', currency=currency) }}</p>
                 {{ form.amount(
-                    class="form-control onboarding-input" + (" is-invalid" if form.amount.errors else ""),
+                    class="form-control onboarding-input money-value" + (" is-invalid" if form.amount.errors else ""),
                     placeholder="300.000",
                     inputmode="decimal"
                 ) }}
                 {% for error in form.amount.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
 
@@ -53,30 +53,29 @@ reviewed and adapted by the project author. -->
                     class="form-select onboarding-input" + (" is-invalid" if form.frequency.errors else "")
                 ) }}
                 {% for error in form.frequency.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
 
             <div class="onboarding-form-group settings-income-date-field">
                 {{ form.next_payment_date.label(class="form-label onboarding-label") }}
-                <p class="onboarding-helper">Optional. Use today or a future date.</p>
+                <p class="onboarding-helper">{{ t('Optional. Use today or a future date.') }}</p>
                 {{ form.next_payment_date(
                     class="form-control onboarding-input" + (" is-invalid" if form.next_payment_date.errors else "")
                 ) }}
                 {% for error in form.next_payment_date.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
         </div>
 
         <p class="settings-information-note">
-            This source is scheduling information only. Saving it will not add
-            money to your current balance or create an income transaction.
+            {{ t('This source is scheduling information only. Saving it does not change your balance or create a transaction.') }}
         </p>
 
         <div class="onboarding-actions settings-income-form-actions">
             <a class="btn onboarding-back" href="{{ url_for('settings.settings') }}">
-                Cancel
+                {{ t('Cancel') }}
             </a>
             {{ form.submit(class="btn app-primary-button") }}
         </div>

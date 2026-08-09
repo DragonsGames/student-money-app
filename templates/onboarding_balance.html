@@ -1,11 +1,11 @@
 {% extends "onboarding_base.html" %}
 {% set onboarding_step = 4 %}
 
-{% block title %}Set your balance | Student Money{% endblock %}
-{% block step_name %}Starting point{% endblock %}
-{% block onboarding_title %}How much money do you have right now?{% endblock %}
+{% block title %}{{ t('Starting point') }} | ILI pika{% endblock %}
+{% block step_name %}{{ t('Starting point') }}{% endblock %}
+{% block onboarding_title %}{{ t('How much money do you have right now?') }}{% endblock %}
 {% block onboarding_subtitle %}
-This is the money you currently consider available to spend or save—not your lifetime savings.
+{{ t('Use the amount you currently consider available to spend or save.') }}
 {% endblock %}
 
 {% block onboarding_content %}
@@ -16,31 +16,31 @@ This is the money you currently consider available to spend or save—not your l
     <div class="balance-callout">
         <span class="balance-callout-icon" aria-hidden="true">↗</span>
         <div>
-            <strong>A simple starting point</strong>
-            <p class="mb-0">You can update this later as your balance changes.</p>
+            <strong>{{ t('A simple starting point') }}</strong>
+            <p class="mb-0">{{ t('You can update it later as your balance changes.') }}</p>
         </div>
     </div>
 
     <div class="onboarding-form-group mb-0">
         {{ form.starting_balance.label(class="form-label onboarding-label") }}
         <p id="balance-help" class="onboarding-helper">
-            Use the amount available to you today.
+            {{ t('Use the amount available to you today.') }}
         </p>
         {{ form.starting_balance(
-            class="form-control onboarding-input onboarding-balance-input" + (" is-invalid" if form.starting_balance.errors else ""),
+            class="form-control onboarding-input onboarding-balance-input money-value" + (" is-invalid" if form.starting_balance.errors else ""),
             placeholder="350.000",
             inputmode="decimal",
             aria_describedby="balance-help"
         ) }}
 
         {% for error in form.starting_balance.errors %}
-            <div class="form-error" role="alert">{{ error }}</div>
+            <div class="form-error" role="alert">{{ t_text(error) }}</div>
         {% endfor %}
     </div>
 
     <div class="onboarding-actions">
         <a class="btn onboarding-back" href="{{ url_for('onboarding.onboarding_income') }}">
-            <span aria-hidden="true">←</span> Back
+            {{ t('Back') }}
         </a>
         {{ form.submit(class="btn onboarding-primary") }}
     </div>

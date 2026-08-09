@@ -2,11 +2,11 @@
 {% set onboarding_step = 3 %}
 {% set onboarding_shell_class = "onboarding-shell-wide" %}
 
-{% block title %}Add your income | Student Money{% endblock %}
-{% block step_name %}Money coming in{% endblock %}
-{% block onboarding_title %}How do you receive money?{% endblock %}
+{% block title %}{{ t('Money coming in') }} | ILI pika{% endblock %}
+{% block step_name %}{{ t('Money coming in') }}{% endblock %}
+{% block onboarding_title %}{{ t('How do you receive money?') }}{% endblock %}
 {% block onboarding_subtitle %}
-Add regular income, one-off payments, or anything else you want to keep track of.
+{{ t('Add regular income, one-off payments, or anything else you want to keep visible.') }}
 {% endblock %}
 
 {% block onboarding_content %}
@@ -19,17 +19,18 @@ Add regular income, one-off payments, or anything else you want to keep track of
             <article class="dynamic-item-card income-source">
                 <div class="dynamic-item-header">
                     <div>
-                        <p class="dynamic-item-eyebrow">Income source</p>
+                        <p class="dynamic-item-eyebrow">{{ t('Income source') }}</p>
                         <h2 class="dynamic-item-title">
-                            Source <span class="item-number">{{ loop.index }}</span>
+                            {{ t('Source') }} <span class="item-number">{{ loop.index }}</span>
                         </h2>
                     </div>
                     <button
                         type="button"
                         class="btn remove-item-button remove-source"
-                        aria-label="Remove income source {{ loop.index }}"
+                        data-remove-label="{{ t('Remove income source') }}"
+                        aria-label="{{ t('Remove income source') }} {{ loop.index }}"
                     >
-                        Remove
+                        {{ t('Remove') }}
                     </button>
                 </div>
 
@@ -38,23 +39,23 @@ Add regular income, one-off payments, or anything else you want to keep track of
                         {{ source.form.name.label(class="form-label onboarding-label") }}
                         {{ source.form.name(
                             class="form-control onboarding-input" + (" is-invalid" if source.form.name.errors else ""),
-                            placeholder="e.g. Monthly allowance",
+                            placeholder=t('e.g. Monthly allowance'),
                             autocomplete="off"
                         ) }}
                         {% for error in source.form.name.errors %}
-                            <div class="form-error" role="alert">{{ error }}</div>
+                            <div class="form-error" role="alert">{{ t_text(error) }}</div>
                         {% endfor %}
                     </div>
 
                     <div class="col-12 col-md-6">
                         {{ source.form.amount.label(class="form-label onboarding-label") }}
                         {{ source.form.amount(
-                            class="form-control onboarding-input" + (" is-invalid" if source.form.amount.errors else ""),
+                            class="form-control onboarding-input money-value" + (" is-invalid" if source.form.amount.errors else ""),
                             placeholder="300.000",
                             inputmode="decimal"
                         ) }}
                         {% for error in source.form.amount.errors %}
-                            <div class="form-error" role="alert">{{ error }}</div>
+                            <div class="form-error" role="alert">{{ t_text(error) }}</div>
                         {% endfor %}
                     </div>
 
@@ -64,7 +65,7 @@ Add regular income, one-off payments, or anything else you want to keep track of
                             class="form-select onboarding-input" + (" is-invalid" if source.form.frequency.errors else "")
                         ) }}
                         {% for error in source.form.frequency.errors %}
-                            <div class="form-error" role="alert">{{ error }}</div>
+                            <div class="form-error" role="alert">{{ t_text(error) }}</div>
                         {% endfor %}
                     </div>
 
@@ -74,7 +75,7 @@ Add regular income, one-off payments, or anything else you want to keep track of
                             class="form-control onboarding-input" + (" is-invalid" if source.form.next_payment_date.errors else "")
                         ) }}
                         {% for error in source.form.next_payment_date.errors %}
-                            <div class="form-error" role="alert">{{ error }}</div>
+                            <div class="form-error" role="alert">{{ t_text(error) }}</div>
                         {% endfor %}
                     </div>
                 </div>
@@ -83,12 +84,12 @@ Add regular income, one-off payments, or anything else you want to keep track of
     </div>
 
     <button type="button" id="add-source" class="btn add-item-button">
-        <span aria-hidden="true">+</span> Add another income source
+        <span aria-hidden="true">+</span> {{ t('Add another income source') }}
     </button>
 
     <div class="onboarding-actions">
         <a class="btn onboarding-back" href="{{ url_for('onboarding.onboarding_goals') }}">
-            <span aria-hidden="true">←</span> Back
+            {{ t('Back') }}
         </a>
         {{ form.submit(class="btn onboarding-primary") }}
     </div>

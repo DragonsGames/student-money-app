@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload
 
 from extensions import db
 from forms import DeleteTransactionForm, LogoutForm, TransactionForm
+from localization import category_name
 from models import Category, Transaction
 from routes.guards import onboarding_complete_required
 from services.finance import ZERO, get_financial_summary
@@ -30,7 +31,7 @@ def _user_categories():
 
 def _set_category_choices(form, categories):
     form.category_id.choices = [(0, "Choose a category")] + [
-        (category.id, category.name)
+        (category.id, category_name(category))
         for category in categories
     ]
 

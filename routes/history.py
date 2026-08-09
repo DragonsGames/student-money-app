@@ -7,6 +7,7 @@ from sqlalchemy.orm import selectinload
 
 from extensions import db
 from forms import HistoryFilterForm, LogoutForm
+from localization import category_name
 from models import Category, Transaction
 from routes.guards import onboarding_complete_required
 
@@ -55,7 +56,7 @@ def history():
     categories = _user_categories()
     form = HistoryFilterForm(request.args)
     form.category_id.choices = [(0, "All categories")] + [
-        (category.id, category.name)
+        (category.id, category_name(category))
         for category in categories
     ]
 

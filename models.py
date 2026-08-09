@@ -113,9 +113,25 @@ class UserSettings(db.Model):
         server_default="monthly"
     )
 
+    appearance: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default="system",
+        server_default="system"
+    )
+
+    language: Mapped[str] = mapped_column(
+        String(5),
+        nullable=False,
+        default="en",
+        server_default="en"
+    )
+
     user: Mapped["User"] = relationship(
         back_populates="settings"
     )
+
+
 class IncomeSource(db.Model):
     __tablename__ = "income_sources"
 

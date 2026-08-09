@@ -1,0 +1,17 @@
+<form class="language-control" method="post" action="{{ url_for('public.set_language') }}">
+    {{ language_form.csrf_token(id="language-preference-csrf") }}
+    <input type="hidden" name="next" value="{{ request.full_path }}">
+    <label class="visually-hidden" for="language-control-{{ language_form.language.id }}">
+        {{ t('Language') }}
+    </label>
+    <select
+        id="language-control-{{ language_form.language.id }}"
+        name="language"
+        aria-label="{{ t('Language') }}"
+        data-language-select
+    >
+        <option value="en"{% if language == 'en' %} selected{% endif %}>EN</option>
+        <option value="fr"{% if language == 'fr' %} selected{% endif %}>FR</option>
+        <option value="ar"{% if language == 'ar' %} selected{% endif %}>AR</option>
+    </select>
+</form>

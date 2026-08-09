@@ -2,15 +2,15 @@
 {% set active_page = "savings" %}
 
 {% block title %}
-{% if mode == "edit" %}Edit{% else %}Add{% endif %} savings goal | Student Money
+{% if mode == "edit" %}{{ t('Edit') }}{% else %}{{ t('Add') }}{% endif %} {{ t('savings goal') }} | ILI pika
 {% endblock %}
 
 {% block app_page_title %}
-{% if mode == "edit" %}Edit savings goal{% else %}Add savings goal{% endif %}
+{% if mode == "edit" %}{{ t('Edit savings goal') }}{% else %}{{ t('Add savings goal') }}{% endif %}
 {% endblock %}
 
 {% block app_page_subtitle %}
-Define a monetary target without changing your transaction ledger.
+{{ t('Define a monetary target without changing your transaction ledger.') }}
 {% endblock %}
 
 {% block app_content %}
@@ -26,42 +26,42 @@ reviewed and adapted by the project author. -->
                 {{ form.name.label(class="form-label onboarding-label") }}
                 {{ form.name(
                     class="form-control onboarding-input" + (" is-invalid" if form.name.errors else ""),
-                    placeholder="Laptop",
+                    placeholder=t('Laptop'),
                     autocomplete="off"
                 ) }}
                 {% for error in form.name.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
 
             <div class="onboarding-form-group">
                 {{ form.target_amount.label(class="form-label onboarding-label") }}
-                <p class="onboarding-helper">A positive target amount in {{ currency }}.</p>
+                <p class="onboarding-helper">{{ t('A positive target amount in {currency}.', currency=currency) }}</p>
                 {{ form.target_amount(
-                    class="form-control onboarding-input" + (" is-invalid" if form.target_amount.errors else ""),
+                    class="form-control onboarding-input money-value" + (" is-invalid" if form.target_amount.errors else ""),
                     placeholder="2500.000",
                     inputmode="decimal"
                 ) }}
                 {% for error in form.target_amount.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
 
             <div class="onboarding-form-group savings-target-date-field">
                 {{ form.target_date.label(class="form-label onboarding-label") }}
-                <p class="onboarding-helper">Optional. Past dates remain valid for missed targets.</p>
+                <p class="onboarding-helper">{{ t('Optional. Past dates remain valid for missed targets.') }}</p>
                 {{ form.target_date(
                     class="form-control onboarding-input" + (" is-invalid" if form.target_date.errors else "")
                 ) }}
                 {% for error in form.target_date.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
         </div>
 
         <div class="onboarding-actions savings-form-actions">
             <a class="btn onboarding-back" href="{{ url_for('savings.savings') }}">
-                Cancel
+                {{ t('Cancel') }}
             </a>
             {{ form.submit(class="btn app-primary-button") }}
         </div>

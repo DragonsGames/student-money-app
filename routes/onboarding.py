@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, g, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from extensions import db
@@ -30,7 +30,8 @@ def onboarding():
 
         if settings is None:
             settings = UserSettings(
-                user_id=current_user.id
+                user_id=current_user.id,
+                language=g.language,
             )
             db.session.add(settings)
 
@@ -121,7 +122,8 @@ def onboarding_balance():
 
         if settings is None:
             settings = UserSettings(
-                user_id=current_user.id
+                user_id=current_user.id,
+                language=g.language,
             )
             db.session.add(settings)
 

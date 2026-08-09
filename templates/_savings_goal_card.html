@@ -3,17 +3,17 @@
 <article class="savings-goal-card{% if item['completed'] %} savings-goal-complete{% elif item['overdue'] %} savings-goal-overdue{% endif %}">
     <div class="savings-goal-heading">
         <div>
-            <p class="dashboard-eyebrow">Savings goal</p>
+            <p class="dashboard-eyebrow">{{ t('Savings goal') }}</p>
             <h3>{{ goal.name }}</h3>
         </div>
 
         {% if item["completed"] %}
             <span class="savings-status-badge savings-status-complete">
-                Target reached
+                {{ t('Target reached') }}
             </span>
         {% elif item["overdue"] %}
             <span class="savings-status-badge savings-status-overdue">
-                Overdue
+                {{ t('Overdue') }}
             </span>
         {% endif %}
     </div>
@@ -29,31 +29,33 @@
         aria-valuenow="{{ item['visual_percentage'] }}"
         aria-valuemin="0"
         aria-valuemax="100"
-        aria-valuetext="{{ '{:,.1f}'.format(item['percentage']) }} percent saved"
+        aria-valuetext="{{ t('{percentage} percent saved', percentage='{:,.1f}'.format(item['percentage'])) }}"
     >
         <span style="width: {{ item['visual_percentage'] }}%;"></span>
     </div>
 
     <div class="savings-goal-metrics">
-        <strong>{{ "{:,.1f}".format(item["percentage"]) }}% saved</strong>
+        <strong><span class="money-value">{{ "{:,.1f}".format(item["percentage"]) }}%</span> {{ t('saved') }}</strong>
         {% if item["completed"] %}
             {% if item["over_target"] > 0 %}
                 <span>
-                    {{ "{:,.3f}".format(item["over_target"]) }} {{ currency }} beyond target
+                    <span class="money-value">{{ "{:,.3f}".format(item["over_target"]) }} {{ currency }}</span>
+                    {{ t('beyond target') }}
                 </span>
             {% else %}
-                <span>Target reached</span>
+                <span>{{ t('Target reached') }}</span>
             {% endif %}
         {% else %}
             <span>
-                {{ "{:,.3f}".format(item["remaining"]) }} {{ currency }} remaining
+                <span class="money-value">{{ "{:,.3f}".format(item["remaining"]) }} {{ currency }}</span>
+                {{ t('remaining') }}
             </span>
         {% endif %}
     </div>
 
     {% if goal.target_date %}
         <p class="savings-target-date{% if item['overdue'] %} savings-target-date-overdue{% endif %}">
-            Target date: {{ goal.target_date.strftime("%b %d, %Y") }}
+            {{ t('Target date') }}: {{ format_date(goal.target_date) }}
         </p>
     {% endif %}
 
@@ -62,13 +64,13 @@
             class="savings-action-link"
             href="{{ url_for('savings.update_amount', goal_id=goal.id) }}"
         >
-            Add / withdraw
+            {{ t('Add / withdraw') }}
         </a>
         <a
             class="savings-edit-link"
             href="{{ url_for('savings.edit_goal', goal_id=goal.id) }}"
         >
-            Edit
+            {{ t('Edit') }}
         </a>
         <form
             method="post"
@@ -78,9 +80,10 @@
             <button
                 type="submit"
                 class="savings-delete-button"
-                title="Delete this goal record without changing transactions or balances."
+                data-confirm="{{ t('Delete this record? This cannot be undone.') }}"
+                title="{{ t('Delete this goal record without changing transactions or balances.') }}"
             >
-                Delete
+                {{ t('Delete') }}
             </button>
         </form>
     </div>

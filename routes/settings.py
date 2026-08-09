@@ -8,6 +8,7 @@ from forms import (
     IncomeSourceSettingsForm,
     LogoutForm,
     MoneySettingsForm,
+    PreferenceSettingsForm,
     ProfileSettingsForm,
 )
 from models import IncomeSource, UserGoal
@@ -55,6 +56,7 @@ def _owned_income_source(source_id):
 def _render_settings(
     profile_form=None,
     money_form=None,
+    preference_form=None,
     goals_form=None,
 ):
     settings = current_user.settings
@@ -66,6 +68,9 @@ def _render_settings(
     if money_form is None:
         money_form = MoneySettingsForm(obj=settings)
 
+    if preference_form is None:
+        preference_form = PreferenceSettingsForm(obj=settings)
+
     if goals_form is None:
         goals_form = GoalsSettingsForm(
             goals=[goal.goal_type for goal in goals]
@@ -75,6 +80,7 @@ def _render_settings(
         "settings.html",
         profile_form=profile_form,
         money_form=money_form,
+        preference_form=preference_form,
         goals_form=goals_form,
         income_sources=_user_income_sources(),
         delete_form=DeleteIncomeSourceForm(),
@@ -135,6 +141,23 @@ def update_money():
         return redirect(url_for("settings.settings"))
 
     return _render_settings(money_form=form)
+
+
+@settings_bp.route("/settings/preferences", methods=["POST"])
+@login_required
+@onboarding_complete_required
+def update_preferences():
+    form = PreferenceSettingsForm()
+
+    if form.validate_on_submit():
+        settings = current_user.settings
+        settings.appearance = form.appearance.data
+        settings.language = form.language.data
+        db.session.commit()
+        flash("Appearance and language updated successfully.", "success")
+        return redirect(url_for("settings.settings"))
+
+    return _render_settings(preference_form=form)
 
 
 @settings_bp.route("/settings/goals", methods=["POST"])

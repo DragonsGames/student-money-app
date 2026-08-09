@@ -248,7 +248,7 @@ class CategoryForm(FlaskForm):
             Length(max=20),
             Regexp(
                 r"\A#[0-9A-Fa-f]{6}\Z",
-                message="Use a six-digit hex color such as #7657ff."
+                message="Use a six-digit hex color such as #b6532e."
             ),
         ]
     )
@@ -531,6 +531,42 @@ class MoneySettingsForm(FlaskForm):
     )
 
     submit = SubmitField("Save money settings")
+
+
+class PreferenceSettingsForm(FlaskForm):
+    appearance = SelectField(
+        "Appearance",
+        choices=[
+            ("system", "Use device setting"),
+            ("light", "Light"),
+            ("dark", "Dark"),
+        ],
+        validators=[DataRequired()]
+    )
+
+    language = SelectField(
+        "Language",
+        choices=[
+            ("en", "English"),
+            ("fr", "Français"),
+            ("ar", "العربية"),
+        ],
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField("Save preferences")
+
+
+class LanguagePreferenceForm(FlaskForm):
+    language = SelectField(
+        "Language",
+        choices=[
+            ("en", "English"),
+            ("fr", "Français"),
+            ("ar", "العربية"),
+        ],
+        validators=[DataRequired()]
+    )
 
 
 class GoalsSettingsForm(FlaskForm):

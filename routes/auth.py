@@ -10,10 +10,16 @@ from models import User
 auth_bp = Blueprint("auth", __name__)
 
 
+def _authenticated_destination():
+    if current_user.onboarding_completed:
+        return url_for("dashboard.dashboard")
+    return url_for("onboarding.onboarding")
+
+
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard.dashboard"))
+        return redirect(_authenticated_destination())
     form = RegistrationForm()
 
     if form.validate_on_submit():
@@ -46,7 +52,7 @@ def register():
 def login():
     form = LoginForm()
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard.dashboard"))
+        return redirect(_authenticated_destination())
     if form.validate_on_submit():
 
         user = db.session.execute(

@@ -1,0 +1,21 @@
+<div class="color-picker" data-color-picker>
+    {{ color_field(type="hidden") }}
+    <input
+        id="{{ color_field.id }}-native"
+        type="color"
+        value="{{ color_field.data or '#b6532e' }}"
+        data-color-native
+        aria-label="{{ t('Custom color') }}"
+    >
+    <div class="color-swatches" aria-label="{{ t('Choose a color') }}">
+        {% for swatch in ['#b6532e', '#c67b30', '#47694f', '#267a76', '#467787', '#9a4b45', '#7a6841', '#596b73'] %}
+            <button
+                class="color-swatch-button"
+                type="button"
+                style="--swatch: {{ swatch }}"
+                data-color-value="{{ swatch }}"
+                aria-label="{{ swatch }}"
+            ></button>
+        {% endfor %}
+    </div>
+</div>

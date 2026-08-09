@@ -7,155 +7,140 @@
 ) %}
 
 {% set app_navigation = [
-    {
-        "key": "dashboard",
-        "label": "Dashboard",
-        "symbol": "⌂",
-        "href": url_for("dashboard.dashboard")
-    },
-    {
-        "key": "transactions",
-        "label": "Transactions",
-        "symbol": "↕",
-        "href": url_for("transactions.transactions")
-    },
-    {
-        "key": "budgets",
-        "label": "Budgets",
-        "symbol": "▤",
-        "href": url_for("budgets.budgets")
-    },
-    {
-        "key": "savings",
-        "label": "Savings",
-        "symbol": "◇",
-        "href": url_for("savings.savings")
-    },
-    {
-        "key": "categories",
-        "label": "Categories",
-        "symbol": "◫",
-        "href": url_for("categories.categories")
-    },
-    {
-        "key": "history",
-        "label": "History",
-        "symbol": "↶",
-        "href": url_for("history.history")
-    }
+    {"key": "dashboard", "label": t("Dashboard"), "icon": "home", "href": url_for("dashboard.dashboard")},
+    {"key": "transactions", "label": t("Transactions"), "icon": "transactions", "href": url_for("transactions.transactions")},
+    {"key": "budgets", "label": t("Budgets"), "icon": "budget", "href": url_for("budgets.budgets")},
+    {"key": "savings", "label": t("Savings"), "icon": "savings", "href": url_for("savings.savings")},
+    {"key": "categories", "label": t("Categories"), "icon": "categories", "href": url_for("categories.categories")},
+    {"key": "history", "label": t("History"), "icon": "history", "href": url_for("history.history")}
 ] %}
 
-{% block content %}
+{% block body_class %}app-body{% endblock %}
 
+{% block content %}
 <!-- AI assistance: OpenAI Codex helped draft this reusable authenticated app
 layout; reviewed and adapted by the project author. -->
 <div class="app-shell">
-
     <header class="app-topbar">
-        <a class="app-brand" href="{{ url_for('dashboard.dashboard') }}">
-            <span class="app-brand-mark" aria-hidden="true">S</span>
-            <span>Student Money</span>
+        <a class="brand app-brand" href="{{ url_for('dashboard.dashboard') }}">
+            <img src="{{ url_for('static', filename='pika-mark.svg') }}" alt="" width="36" height="36">
+            <span>ILI pika</span>
         </a>
 
-        <div class="dropdown app-menu">
-            <button
-                class="app-menu-button"
-                type="button"
-                data-bs-toggle="dropdown"
-                data-bs-display="static"
-                aria-expanded="false"
-                aria-label="Open navigation menu"
-            >
-                <span class="app-menu-icon" aria-hidden="true"></span>
-            </button>
+        <nav class="desktop-nav" aria-label="{{ t('Primary navigation') }}">
+            {% for item in app_navigation %}
+                <a
+                    class="desktop-nav-link{% if active_page == item.key %} active{% endif %}"
+                    href="{{ item.href }}"
+                    {% if active_page == item.key %}aria-current="page"{% endif %}
+                >
+                    <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#{{ item.icon }}"></use></svg>
+                    <span>{{ item.label }}</span>
+                </a>
+            {% endfor %}
+        </nav>
 
-            <div class="dropdown-menu dropdown-menu-end app-floating-menu">
-                <nav class="app-nav" aria-label="Primary navigation">
-                    <p class="app-nav-label">Menu</p>
-
-                    {% for item in app_navigation %}
-                        <a
-                            class="app-nav-link{% if active_page == item.key %} active{% endif %}"
-                            href="{{ item.href }}"
-                            {% if active_page == item.key %}aria-current="page"{% endif %}
-                        >
-                            <span class="app-nav-symbol" aria-hidden="true">
-                                {{ item.symbol }}
-                            </span>
-                            <span>{{ item.label }}</span>
-                        </a>
-                    {% endfor %}
-                </nav>
-
-                <div class="app-account">
-                    <div class="app-account-summary">
-                        <span class="app-account-avatar" aria-hidden="true">
-                            {{ account_name[0]|upper }}
-                        </span>
-                        <span class="app-account-copy">
-                            <strong>{{ account_name }}</strong>
-                            <small>{{ current_user.email }}</small>
-                        </span>
-                    </div>
-
-                    <a
-                        class="app-account-link{% if active_page == 'settings' %} active{% endif %}"
-                        href="{{ url_for('settings.settings') }}"
-                        {% if active_page == 'settings' %}aria-current="page"{% endif %}
-                    >
-                        <span aria-hidden="true">⚙</span>
-                        Profile & settings
-                    </a>
-
-                    <form
-                        class="app-logout-form"
-                        method="post"
-                        action="{{ url_for('auth.logout') }}"
-                    >
-                        {{ logout_form.hidden_tag() }}
-                        <button type="submit" class="app-account-link app-logout-button">
-                            <span aria-hidden="true">↪</span>
-                            Log out
-                        </button>
-                    </form>
+        <details class="account-menu">
+            <summary aria-label="{{ t('Open menu') }}">
+                <span class="account-avatar" aria-hidden="true">{{ account_name[0]|upper }}</span>
+            </summary>
+            <div class="account-popover">
+                <div class="account-identity">
+                    <strong>{{ account_name }}</strong>
+                    <span>{{ current_user.email }}</span>
                 </div>
+                <a class="account-link{% if active_page == 'settings' %} active{% endif %}" href="{{ url_for('settings.settings') }}">
+                    <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#settings"></use></svg>
+                    {{ t('Profile & settings') }}
+                </a>
+                <form method="post" action="{{ url_for('auth.logout') }}">
+                    {{ logout_form.csrf_token(id="desktop-logout-csrf") }}
+                    <button class="account-link danger-quiet" type="submit">{{ t('Log out') }}</button>
+                </form>
             </div>
-        </div>
+        </details>
     </header>
 
-    <main class="app-main">
-        <div class="app-main-inner">
-            <header class="app-page-header">
-                <div>
-                    <h1 class="app-page-title">
-                        {% block app_page_title %}{% endblock %}
-                    </h1>
-                    <p class="app-page-subtitle">
-                        {% block app_page_subtitle %}{% endblock %}
-                    </p>
+    <main id="main-content" class="app-main">
+        <header class="app-page-header">
+            <div>
+                <h1 class="app-page-title">{% block app_page_title %}{% endblock %}</h1>
+                <p class="app-page-subtitle">{% block app_page_subtitle %}{% endblock %}</p>
+            </div>
+            <div class="app-header-actions">{% block app_header_actions %}{% endblock %}</div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack" aria-live="polite">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}" role="alert">{{ t_text(message) }}</div>
+                    {% endfor %}
                 </div>
+            {% endif %}
+        {% endwith %}
 
-                <div class="app-header-actions">
-                    {% block app_header_actions %}{% endblock %}
-                </div>
-            </header>
-
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <div class="app-flashes" aria-live="polite">
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}" role="alert">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
-
-            {% block app_content %}{% endblock %}
-        </div>
+        {% block app_content %}{% endblock %}
     </main>
 
-</div>
+    <nav class="mobile-nav" aria-label="{{ t('Primary navigation') }}">
+        {% for item in app_navigation[:2] %}
+            <a class="mobile-nav-link{% if active_page == item.key %} active{% endif %}" href="{{ item.href }}" {% if active_page == item.key %}aria-current="page"{% endif %}>
+                <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#{{ item.icon }}"></use></svg>
+                <span>{{ item.label }}</span>
+            </a>
+        {% endfor %}
 
+        <a class="mobile-add-action" href="{{ url_for('transactions.add_transaction') }}" aria-label="{{ t('Add transaction') }}">
+            <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#plus"></use></svg>
+        </a>
+
+        <a class="mobile-nav-link{% if active_page == 'budgets' %} active{% endif %}" href="{{ url_for('budgets.budgets') }}" {% if active_page == 'budgets' %}aria-current="page"{% endif %}>
+            <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#budget"></use></svg>
+            <span>{{ t('Budgets') }}</span>
+        </a>
+
+        <button class="mobile-nav-link" type="button" data-menu-open aria-controls="mobile-menu" aria-expanded="false">
+            <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#more"></use></svg>
+            <span>{{ t('More') }}</span>
+        </button>
+    </nav>
+
+    <div class="mobile-menu-backdrop" data-menu-close hidden></div>
+    <aside id="mobile-menu" class="mobile-menu" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="mobile-menu-title">
+        <header>
+            <div>
+                <p class="eyebrow">ILI pika</p>
+                <h2 id="mobile-menu-title">{{ t('More') }}</h2>
+            </div>
+            <button class="icon-button" type="button" data-menu-close aria-label="{{ t('Close menu') }}">
+                <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#close"></use></svg>
+            </button>
+        </header>
+
+        <nav class="mobile-menu-links">
+            {% for item in app_navigation[3:] %}
+                <a class="mobile-menu-link{% if active_page == item.key %} active{% endif %}" href="{{ item.href }}">
+                    <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#{{ item.icon }}"></use></svg>
+                    <span>{{ item.label }}</span>
+                </a>
+            {% endfor %}
+            <a class="mobile-menu-link{% if active_page == 'settings' %} active{% endif %}" href="{{ url_for('settings.settings') }}">
+                <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#settings"></use></svg>
+                <span>{{ t('Settings') }}</span>
+            </a>
+        </nav>
+
+        <div class="mobile-account">
+            <div class="account-identity">
+                <strong>{{ account_name }}</strong>
+                <span>{{ current_user.email }}</span>
+            </div>
+            <form method="post" action="{{ url_for('auth.logout') }}">
+                {{ logout_form.csrf_token(id="mobile-logout-csrf") }}
+                <button class="button-quiet danger-quiet" type="submit">{{ t('Log out') }}</button>
+            </form>
+        </div>
+    </aside>
+</div>
 {% endblock %}

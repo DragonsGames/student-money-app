@@ -8,6 +8,7 @@ from forms import (
     DeleteBudgetForm,
     LogoutForm,
 )
+from localization import category_name
 from models import Budget, Category
 from routes.guards import onboarding_complete_required
 from services.budgets import get_budget_summary
@@ -57,7 +58,7 @@ def _available_expense_categories(excluded_budget_id=None):
 
 def _set_category_choices(form, categories):
     form.category_id.choices = [(0, "Choose an expense category")] + [
-        (category.id, category.name)
+        (category.id, category_name(category))
         for category in categories
     ]
 

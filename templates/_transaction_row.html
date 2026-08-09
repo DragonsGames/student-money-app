@@ -6,19 +6,19 @@
             {{ category_icon }}
         </span>
         <div class="transaction-copy">
-            <strong>{{ transaction.category.name }}</strong>
+            <strong>{{ category_name(transaction.category) }}</strong>
             {% if transaction.description %}
                 <span>{{ transaction.description }}</span>
             {% else %}
-                <span>No description</span>
+                <span>{{ t('No description') }}</span>
             {% endif %}
         </div>
     </div>
 
     <div class="transaction-details">
-        <span>{{ transaction.transaction_date.strftime("%b %d, %Y") }}</span>
+        <span>{{ format_date(transaction.transaction_date) }}</span>
         <span class="transaction-type transaction-type-{{ transaction.transaction_type }}">
-            {{ transaction.transaction_type|capitalize }}
+            {{ t('Income') if transaction.transaction_type == 'income' else t('Expense') }}
         </span>
     </div>
 
@@ -33,15 +33,15 @@
                 class="transaction-action-link"
                 href="{{ url_for('transactions.edit_transaction', transaction_id=transaction.id) }}"
             >
-                Edit
+                {{ t('Edit') }}
             </a>
             <form
                 method="post"
                 action="{{ url_for('transactions.delete_transaction', transaction_id=transaction.id) }}"
             >
                 {{ delete_form.csrf_token(id="delete-csrf-" ~ transaction.id) }}
-                <button type="submit" class="transaction-delete-button">
-                    Delete
+                <button type="submit" class="transaction-delete-button" data-confirm="{{ t('Delete this record? This cannot be undone.') }}">
+                    {{ t('Delete') }}
                 </button>
             </form>
         </div>

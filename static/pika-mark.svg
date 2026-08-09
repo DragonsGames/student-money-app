@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">ILI pika mark</title>
+  <path fill="#d99a51" d="M15 24C8 18 8 8 16 6c7-2 12 7 12 14h8c0-7 5-16 12-14 8 2 8 12 1 18 5 5 8 12 8 20 0 9-10 14-25 14S7 53 7 44c0-8 3-15 8-20Z"/>
+  <path fill="#fff8e8" d="M18 20c-3-3-4-7-1-9 3-1 6 4 6 9h-5Zm28 0c3-3 4-7 1-9-3-1-6 4-6 9h5Z"/>
+  <path fill="#273a2b" d="M21 35a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm22 0a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm-7 6c0 3-2 5-4 5s-4-2-4-5c0-2 2-3 4-3s4 1 4 3Z"/>
+  <path fill="none" stroke="#273a2b" stroke-linecap="round" stroke-width="2" d="M32 46v3m0 0c-3 0-5-1-7-3m7 3c3 0 5-1 7-3"/>
+</svg>

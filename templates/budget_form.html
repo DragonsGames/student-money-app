@@ -2,15 +2,15 @@
 {% set active_page = "budgets" %}
 
 {% block title %}
-{% if mode == "edit" %}Edit{% else %}Add{% endif %} budget | Student Money
+{% if mode == "edit" %}{{ t('Edit') }}{% else %}{{ t('Add') }}{% endif %} {{ t('budget') }} | ILI pika
 {% endblock %}
 
 {% block app_page_title %}
-{% if mode == "edit" %}Edit budget{% else %}Add budget{% endif %}
+{% if mode == "edit" %}{{ t('Edit budget') }}{% else %}{{ t('Add budget') }}{% endif %}
 {% endblock %}
 
 {% block app_page_subtitle %}
-Set a spending limit for one expense category.
+{{ t('Set a spending limit for one expense category.') }}
 {% endblock %}
 
 {% block app_content %}
@@ -24,7 +24,7 @@ reviewed and adapted by the project author. -->
         <div class="budget-form-grid">
             <div class="onboarding-form-group">
                 {{ form.category_id.label(class="form-label onboarding-label") }}
-                <p class="onboarding-helper">Only your expense categories can have budgets.</p>
+                <p class="onboarding-helper">{{ t('Only your expense categories can have budgets.') }}</p>
                 {% if categories %}
                     {{ form.category_id(
                         class="form-select onboarding-input" + (" is-invalid" if form.category_id.errors else "")
@@ -37,31 +37,31 @@ reviewed and adapted by the project author. -->
                 {% endif %}
                 {% if not categories %}
                     <p class="budget-category-message">
-                        Every expense category already has a budget, or no expense category exists.
+                        {{ t('Every expense category already has a budget, or no expense category exists.') }}
                     </p>
                 {% endif %}
                 {% for error in form.category_id.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
 
             <div class="onboarding-form-group">
                 {{ form.amount.label(class="form-label onboarding-label") }}
-                <p class="onboarding-helper">A positive amount in {{ currency }}.</p>
+                <p class="onboarding-helper">{{ t('A positive amount in {currency}.', currency=currency) }}</p>
                 {{ form.amount(
-                    class="form-control onboarding-input" + (" is-invalid" if form.amount.errors else ""),
+                    class="form-control onboarding-input money-value" + (" is-invalid" if form.amount.errors else ""),
                     placeholder="100.000",
                     inputmode="decimal"
                 ) }}
                 {% for error in form.amount.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
         </div>
 
         <div class="onboarding-actions budget-form-actions">
             <a class="btn onboarding-back" href="{{ url_for('budgets.budgets') }}">
-                Cancel
+                {{ t('Cancel') }}
             </a>
             {% if categories %}
                 {{ form.submit(class="btn app-primary-button") }}

@@ -1,157 +1,48 @@
 {% extends "app_base.html" %}
 {% set active_page = "history" %}
+{% set active_filter_count = (1 if form.transaction_type.data != 'all' else 0) + (1 if form.category_id.data else 0) + (1 if form.start_date.data else 0) + (1 if form.end_date.data else 0) + (1 if form.sort.data != 'newest' else 0) %}
 
-{% block title %}History | Student Money{% endblock %}
-{% block app_page_title %}History{% endblock %}
-{% block app_page_subtitle %}
-Review and filter your past money activity.
-{% endblock %}
+{% block title %}{{ t('History') }} | ILI pika{% endblock %}
+{% block app_page_title %}{{ t('History') }}{% endblock %}
+{% block app_page_subtitle %}{{ t('Find past activity without losing the full picture.') }}{% endblock %}
 
 {% block app_content %}
-
 <!-- AI assistance: OpenAI Codex helped draft this read-only History filtering
 UI; reviewed and adapted by the project author. -->
-<section class="history-filter-panel" aria-labelledby="history-filter-title">
-    <div class="history-section-heading">
-        <div>
-            <p class="dashboard-eyebrow">Explore activity</p>
-            <h2 id="history-filter-title">Filter transactions</h2>
-        </div>
-        <a class="history-clear-link" href="{{ url_for('history.history') }}">
-            Clear filters
-        </a>
+<details class="history-filter-panel" open>
+    <summary><span>{{ t('Filters') }}{% if active_filter_count %} · {{ active_filter_count }}{% endif %}</span><svg aria-hidden="true" width="20" height="20"><use href="{{ url_for('static', filename='icons.svg') }}#filter"></use></svg></summary>
+    <div class="history-filter-content">
+        <div class="history-section-heading"><div><p class="dashboard-eyebrow">{{ t('Explore activity') }}</p><h2>{{ t('Filter transactions') }}</h2></div>{% if active_filter_count %}<a class="history-clear-link" href="{{ url_for('history.history') }}">{{ t('Clear filters') }}</a>{% endif %}</div>
+        <form method="get" class="history-filter-form">
+            <div class="history-filter-grid">
+                {% for field in [form.transaction_type, form.category_id, form.start_date, form.end_date, form.sort] %}
+                    <div class="onboarding-form-group">
+                        {{ field.label(class="form-label onboarding-label") }}
+                        {{ field(class=("form-select" if field.type == 'SelectField' else "form-control") + " onboarding-input" + (" is-invalid" if field.errors else "")) }}
+                        {% for error in field.errors %}<p class="form-error" role="alert">{{ t_text(error) }}</p>{% endfor %}
+                    </div>
+                {% endfor %}
+                <div class="history-filter-actions">{{ form.submit(class="btn app-primary-button") }}</div>
+            </div>
+        </form>
     </div>
+</details>
 
-    <form method="get" class="history-filter-form">
-        <div class="history-filter-grid">
-            <div class="onboarding-form-group">
-                {{ form.transaction_type.label(class="form-label onboarding-label") }}
-                {{ form.transaction_type(
-                    class="form-select onboarding-input" + (" is-invalid" if form.transaction_type.errors else "")
-                ) }}
-                {% for error in form.transaction_type.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="onboarding-form-group">
-                {{ form.category_id.label(class="form-label onboarding-label") }}
-                {{ form.category_id(
-                    class="form-select onboarding-input" + (" is-invalid" if form.category_id.errors else "")
-                ) }}
-                {% for error in form.category_id.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="onboarding-form-group">
-                {{ form.start_date.label(class="form-label onboarding-label") }}
-                {{ form.start_date(
-                    class="form-control onboarding-input" + (" is-invalid" if form.start_date.errors else "")
-                ) }}
-                {% for error in form.start_date.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="onboarding-form-group">
-                {{ form.end_date.label(class="form-label onboarding-label") }}
-                {{ form.end_date(
-                    class="form-control onboarding-input" + (" is-invalid" if form.end_date.errors else "")
-                ) }}
-                {% for error in form.end_date.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="onboarding-form-group">
-                {{ form.sort.label(class="form-label onboarding-label") }}
-                {{ form.sort(
-                    class="form-select onboarding-input" + (" is-invalid" if form.sort.errors else "")
-                ) }}
-                {% for error in form.sort.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="history-filter-actions">
-                {{ form.submit(class="btn app-primary-button") }}
-            </div>
-        </div>
-    </form>
-</section>
-
-<section class="history-summary-grid" aria-label="Filtered history summary">
-    <article class="history-summary-card history-summary-primary">
-        <p>Transactions</p>
-        <strong>{{ filtered_summary.count }}</strong>
-        <small>In the current filtered result</small>
-    </article>
-
-    <article class="history-summary-card">
-        <p>Income</p>
-        <strong class="transaction-positive">
-            + {{ "{:,.3f}".format(filtered_summary.income) }}
-            <span>{{ currency }}</span>
-        </strong>
-        <small>Filtered income transactions</small>
-    </article>
-
-    <article class="history-summary-card">
-        <p>Expenses</p>
-        <strong class="transaction-negative">
-            - {{ "{:,.3f}".format(filtered_summary.expenses) }}
-            <span>{{ currency }}</span>
-        </strong>
-        <small>Filtered expense transactions</small>
-    </article>
-
-    <article class="history-summary-card">
-        <p>Net</p>
-        <strong class="{% if filtered_summary.net >= 0 %}transaction-positive{% else %}transaction-negative{% endif %}">
-            {% if filtered_summary.net >= 0 %}+{% else %}-{% endif %}
-            {{ "{:,.3f}".format(filtered_summary.net|abs) }}
-            <span>{{ currency }}</span>
-        </strong>
-        <small>Filtered income minus expenses</small>
-    </article>
+<section class="history-summary-grid" aria-label="{{ t('Filtered history summary') }}">
+    <article class="history-summary-card"><p>{{ t('Transactions') }}</p><strong>{{ filtered_summary.count }}</strong><small>{{ t('Shown') }}</small></article>
+    <article class="history-summary-card"><p>{{ t('Income') }}</p><strong class="transaction-positive money-value">+ {{ "{:,.3f}".format(filtered_summary.income) }} <span>{{ currency }}</span></strong><small>{{ t('Filtered') }}</small></article>
+    <article class="history-summary-card"><p>{{ t('Expenses') }}</p><strong class="transaction-negative money-value">- {{ "{:,.3f}".format(filtered_summary.expenses) }} <span>{{ currency }}</span></strong><small>{{ t('Filtered') }}</small></article>
+    <article class="history-summary-card"><p>{{ t('Net') }}</p><strong class="money-value {% if filtered_summary.net >= 0 %}transaction-positive{% else %}transaction-negative{% endif %}">{% if filtered_summary.net >= 0 %}+{% else %}-{% endif %} {{ "{:,.3f}".format(filtered_summary.net|abs) }} <span>{{ currency }}</span></strong><small>{{ t('Income minus expenses') }}</small></article>
 </section>
 
 <section class="transaction-panel history-results-panel" aria-labelledby="history-results-title">
-    <div class="transaction-panel-heading">
-        <div>
-            <p class="dashboard-eyebrow">Ledger results</p>
-            <h2 id="history-results-title">Transaction history</h2>
-        </div>
-        <span>{{ transactions|length }} shown</span>
-    </div>
-
+    <div class="transaction-panel-heading"><div><p class="dashboard-eyebrow">{{ t('Ledger results') }}</p><h2 id="history-results-title">{{ t('Transaction history') }}</h2></div><span>{{ transactions|length }} {{ t('shown') }}</span></div>
     {% if transactions %}
-        <div class="transaction-list">
-            {% set show_actions = false %}
-            {% for transaction in transactions %}
-                {% include "_transaction_row.html" %}
-            {% endfor %}
-        </div>
+        <div class="transaction-list">{% set show_actions = false %}{% for transaction in transactions %}{% include "_transaction_row.html" %}{% endfor %}</div>
     {% elif total_transaction_count == 0 %}
-        <div class="empty-state transaction-empty-state">
-            <span class="empty-state-symbol" aria-hidden="true">↶</span>
-            <h3>No transaction history yet</h3>
-            <p>Add your first transaction to begin building your history.</p>
-            <a class="btn app-primary-button" href="{{ url_for('transactions.add_transaction') }}">
-                Add transaction
-            </a>
-        </div>
+        <div class="empty-state transaction-empty-state"><span class="empty-state-symbol" aria-hidden="true">↶</span><h3>{{ t('No transaction history yet') }}</h3><p>{{ t('Add your first transaction to begin building your history.') }}</p><a class="btn app-primary-button" href="{{ url_for('transactions.add_transaction') }}">{{ t('Add transaction') }}</a></div>
     {% else %}
-        <div class="empty-state transaction-empty-state">
-            <span class="empty-state-symbol" aria-hidden="true">↶</span>
-            <h3>No transactions match these filters</h3>
-            <p>Clear the current filters to return to your full history.</p>
-            <a class="btn app-primary-button" href="{{ url_for('history.history') }}">
-                Clear filters
-            </a>
-        </div>
+        <div class="empty-state transaction-empty-state"><span class="empty-state-symbol" aria-hidden="true">↶</span><h3>{{ t('No transactions match these filters') }}</h3><p>{{ t('Clear the filters to return to your full history.') }}</p><a class="btn app-primary-button" href="{{ url_for('history.history') }}">{{ t('Clear filters') }}</a></div>
     {% endif %}
 </section>
-
 {% endblock %}

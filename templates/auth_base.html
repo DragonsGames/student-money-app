@@ -1,55 +1,46 @@
 {% extends "base.html" %}
 
+{% block body_class %}auth-body{% endblock %}
+
 {% block content %}
-
 <div class="auth-page">
-
-    <div class="auth-brand">
-        <a href="{{ url_for('public.index') }}">
-            Student Money
+    <header class="auth-topbar">
+        <a class="brand" href="{{ url_for('public.index') }}">
+            <img src="{{ url_for('static', filename='pika-mark.svg') }}" alt="" width="38" height="38">
+            <span>ILI pika</span>
         </a>
-    </div>
 
-    <div class="container">
-
-        <div class="row min-vh-100 align-items-center justify-content-center">
-
-            <div class="col-12 col-md-8 col-lg-5 col-xl-4">
-
-                <div class="auth-card">
-
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-
-                        {% if messages %}
-
-                            <div class="mb-4">
-
-                                {% for category, message in messages %}
-
-                                    <div class="alert alert-{{ category }}" role="alert">
-                                        {{ message }}
-                                    </div>
-
-                                {% endfor %}
-
-                            </div>
-
-                        {% endif %}
-
-                    {% endwith %}
-
-
-                    {% block auth_content %}
-                    {% endblock %}
-
-                </div>
-
-            </div>
-
+        <div class="public-tools">
+            <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="{{ t('Change color theme') }}">
+                <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#moon"></use></svg>
+            </button>
+            {% include "_language_control.html" %}
         </div>
+    </header>
 
-    </div>
+    <main id="main-content" class="auth-main">
+        <section class="auth-intro" aria-label="ILI pika">
+            <p class="eyebrow">{{ t('Made for students') }}</p>
+            <h2>{{ t('A calmer way to keep up with your money.') }}</h2>
+            <p>{{ t('Track real transactions, protect your plans, and keep the next decision simple.') }}</p>
+            <div class="pika-peek" aria-hidden="true">
+                <img src="{{ url_for('static', filename='pika-mark.svg') }}" alt="">
+            </div>
+        </section>
 
+        <section class="auth-card">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-stack" aria-live="polite">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}" role="alert">{{ t_text(message) }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block auth_content %}{% endblock %}
+        </section>
+    </main>
 </div>
-
 {% endblock %}

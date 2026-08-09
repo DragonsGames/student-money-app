@@ -1,405 +1,104 @@
 {% extends "base.html" %}
 
-{% block title %}Student Money{% endblock %}
+{% block title %}ILI pika | {{ t('Student money, made clearer') }}{% endblock %}
+{% block body_class %}landing-body{% endblock %}
 
 {% block content %}
-
 <div class="landing-page">
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container py-3">
-
-            <a class="navbar-brand fw-bold fs-4" href="{{ url_for('public.index') }}">
-                Student Money
-            </a>
-
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#mainNavbar"
-            >
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="mainNavbar">
-
-                <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-
-                    <a
-                        class="nav-link"
-                        href="{{ url_for('auth.login') }}"
-                    >
-                        Log in
-                    </a>
-
-                    <a
-                        class="btn btn-dark rounded-pill px-4"
-                        href="{{ url_for('auth.register') }}"
-                    >
-                        Get started
-                    </a>
-
-                </div>
-
+    <header class="landing-nav">
+        <a class="brand" href="{{ url_for('public.index') }}">
+            <img src="{{ url_for('static', filename='pika-mark.svg') }}" alt="" width="40" height="40">
+            <span>ILI pika</span>
+        </a>
+        <div class="landing-nav-actions">
+            <div class="public-tools">
+                <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="{{ t('Change color theme') }}">
+                    <svg aria-hidden="true"><use href="{{ url_for('static', filename='icons.svg') }}#moon"></use></svg>
+                </button>
+                {% include "_language_control.html" %}
             </div>
-
+            <a class="button-quiet landing-login" href="{{ url_for('auth.login') }}">{{ t('Log in') }}</a>
+            <a class="btn button-primary landing-register" href="{{ url_for('auth.register') }}">{{ t('Get started') }}</a>
         </div>
-    </nav>
+    </header>
 
-
-    <!-- Hero -->
-    <main class="container hero-section">
-
-        <div class="row align-items-center g-5">
-
-            <!-- Text -->
-            <div class="col-lg-6">
-
-                <span class="hero-badge">
-                    Money made simpler for students
-                </span>
-
-                <h1 class="display-3 fw-bold mt-3 hero-title">
-                    Know where your money goes.
-                    <span>Save without guessing.</span>
-                </h1>
-
-                <p class="lead text-secondary mt-4">
-                    Track your allowance, understand your spending,
-                    build better habits and reach your savings goals.
-                </p>
-
-                <div class="d-flex flex-wrap gap-3 mt-4">
-
-                    <a
-                        href="{{ url_for('auth.register') }}"
-                        class="btn btn-dark btn-lg rounded-pill px-4"
-                    >
-                        Start for free
-                    </a>
-
-                    <a
-                        href="#preview"
-                        class="btn btn-outline-dark btn-lg rounded-pill px-4"
-                    >
-                        See how it works
-                    </a>
-
+    <main id="main-content">
+        <section class="landing-hero">
+            <div class="hero-copy">
+                <p class="eyebrow">{{ t('Built for real student money') }}</p>
+                <h1>{{ t('Money that makes sense, even when student life does not.') }}</h1>
+                <p class="hero-lead">{{ t('Track what comes in, plan what goes out, and know what is safe to spend without turning money into homework.') }}</p>
+                <div class="hero-actions">
+                    <a class="btn button-primary" href="{{ url_for('auth.register') }}">{{ t('Start managing money') }}</a>
+                    <a class="button-text" href="#how-it-works">{{ t('See how it works') }}</a>
                 </div>
-
+                <p class="hero-note">{{ t('No bank connection. No complicated setup.') }}</p>
             </div>
 
-
-            <!-- Product Preview -->
-            <div class="col-lg-6" id="preview">
-
-                <div class="preview-card">
-
-                    <p class="text-secondary mb-1">
-                        Available this month
-                    </p>
-
-                    <h2 class="display-5 fw-bold">
-                        724.500 TND
-                    </h2>
-
-                    <div class="insight-card mt-4">
-                        <small>✨ Money insight</small>
-
-                        <p class="mb-0 mt-2">
-                            You're on track this week.
-                            You can safely spend around
-                            <strong>18.600 TND/day.</strong>
-                        </p>
-                    </div>
-
-                    <div class="mt-4">
-
-                        <div class="d-flex justify-content-between">
-                            <span>Monthly budget</span>
-                            <strong>426 / 700 TND</strong>
-                        </div>
-
-                        <div
-                            class="progress mt-2"
-                            role="progressbar"
-                            aria-label="Monthly budget"
-                        >
-                            <div
-                                class="progress-bar"
-                                style="width: 61%"
-                            ></div>
-                        </div>
-
-                    </div>
-
+            <div class="hero-scene" aria-label="{{ t('Illustrative ILI pika money overview') }}">
+                <div class="hero-pika" aria-hidden="true">
+                    <img src="{{ url_for('static', filename='pika-mark.svg') }}" alt="">
                 </div>
-
+                <div class="sample-sheet">
+                    <div class="sample-sheet-label">{{ t('Illustrative example') }}</div>
+                    <div class="sample-balance">
+                        <span>{{ t('Available money') }}</span>
+                        <strong>724.500 <small>TND</small></strong>
+                    </div>
+                    <div class="sample-safe">
+                        <span>{{ t('Safe to spend') }}</span>
+                        <strong>318.000 TND</strong>
+                    </div>
+                    <div class="sample-line"><span>{{ t('Food budget') }}</span><b>62%</b></div>
+                    <div class="sample-progress"><span style="width: 62%"></span></div>
+                    <div class="sample-line"><span>{{ t('Laptop fund') }}</span><b>44%</b></div>
+                    <div class="sample-progress savings"><span style="width: 44%"></span></div>
+                </div>
             </div>
+        </section>
 
-        </div>
+        <section id="how-it-works" class="landing-story">
+            <header>
+                <p class="eyebrow">{{ t('Start small') }}</p>
+                <h2>{{ t('Your money, organized around student life.') }}</h2>
+                <p>{{ t('Allowance, part-time work, irregular income, and everyday spending all belong in one calm place.') }}</p>
+            </header>
+            <ol class="story-steps">
+                <li><span>01</span><div><h3>{{ t('Start small') }}</h3><p>{{ t('Add your balance and the categories that fit your life.') }}</p></div></li>
+                <li><span>02</span><div><h3>{{ t('Stay aware') }}</h3><p>{{ t('See your balance, budget, savings, and recent activity at a glance.') }}</p></div></li>
+                <li><span>03</span><div><h3>{{ t('Decide with confidence') }}</h3><p>{{ t('Safe-to-Spend keeps planned money visible before you use it.') }}</p></div></li>
+            </ol>
+        </section>
 
+        <section class="landing-detail">
+            <div class="detail-ledger" aria-hidden="true">
+                <div><span>{{ t('Lunch') }}</span><strong>- 8.500</strong></div>
+                <div><span>{{ t('Part-time work') }}</span><strong>+ 120.000</strong></div>
+                <div><span>{{ t('Transport') }}</span><strong>- 3.200</strong></div>
+            </div>
+            <div>
+                <p class="eyebrow">{{ t('Stay aware') }}</p>
+                <h2>{{ t('A record you can understand in seconds.') }}</h2>
+                <p>{{ t('Income and expenses stay distinct through signs, labels, and layout, not color alone.') }}</p>
+            </div>
+        </section>
+
+        <section class="landing-final">
+            <div>
+                <p class="eyebrow">{{ t('Ready when you are') }}</p>
+                <h2>{{ t('Set up your account in a few short steps.') }}</h2>
+            </div>
+            <a class="btn button-primary" href="{{ url_for('auth.register') }}">{{ t('Create account') }}</a>
+        </section>
     </main>
-    <section class="container py-5">
 
-    <div class="text-center mb-5">
-        <span class="section-label">How it works</span>
-
-        <h2 class="fw-bold display-6 mt-2">
-            Understand your money in minutes.
-        </h2>
-
-        <p class="text-secondary mx-auto section-description">
-            Set up how you receive money, log what you spend,
-            and let your dashboard keep everything clear.
-        </p>
-    </div>
-
-
-    <div class="row g-4">
-
-        <div class="col-md-4">
-            <div class="step-card h-100">
-
-                <div class="step-number">
-                    1
-                </div>
-
-                <h3 class="h5 fw-bold mt-3">
-                    Tell us how you get paid
-                </h3>
-
-                <p class="text-secondary mb-0">
-                    Add your allowance, part-time income,
-                    or any other regular money source.
-                </p>
-
-            </div>
-        </div>
-
-
-        <div class="col-md-4">
-            <div class="step-card h-100">
-
-                <div class="step-number">
-                    2
-                </div>
-
-                <h3 class="h5 fw-bold mt-3">
-                    Track what comes in and out
-                </h3>
-
-                <p class="text-secondary mb-0">
-                    Quickly log income and expenses using categories
-                    that make sense to you.
-                </p>
-
-            </div>
-        </div>
-
-
-        <div class="col-md-4">
-            <div class="step-card h-100">
-
-                <div class="step-number">
-                    3
-                </div>
-
-                <h3 class="h5 fw-bold mt-3">
-                    Know what you can afford
-                </h3>
-
-                <p class="text-secondary mb-0">
-                    See your budget, savings progress,
-                    and useful spending insights in one place.
-                </p>
-
-            </div>
-        </div>
-
-    </div>
-
-</section>
-<section class="container py-5">
-
-    <div class="feature-section">
-
-        <div class="row align-items-center g-5">
-
-            <div class="col-lg-5">
-
-                <span class="section-label">
-                    Built for students
-                </span>
-
-                <h2 class="fw-bold display-6 mt-2">
-                    More than an expense tracker.
-                </h2>
-
-                <p class="text-secondary">
-                    Your money doesn't always arrive on the first
-                    day of the month. Track allowances, extra income,
-                    savings goals and your own spending categories.
-                </p>
-
-                <a
-                    href="{{ url_for('auth.register') }}"
-                    class="btn btn-dark rounded-pill px-4"
-                >
-                    Create your account
-                </a>
-
-            </div>
-
-
-            <div class="col-lg-7">
-
-                <div class="row g-3">
-
-                    <div class="col-sm-6">
-                        <div class="feature-card h-100">
-                            <div class="feature-icon">💸</div>
-
-                            <h3 class="h5 fw-bold">
-                                Flexible income
-                            </h3>
-
-                            <p class="text-secondary mb-0">
-                                Weekly allowance, monthly payments,
-                                side jobs or irregular income.
-                            </p>
-                        </div>
-                    </div>
-
-
-                    <div class="col-sm-6">
-                        <div class="feature-card h-100">
-                            <div class="feature-icon">🏷️</div>
-
-                            <h3 class="h5 fw-bold">
-                                Your categories
-                            </h3>
-
-                            <p class="text-secondary mb-0">
-                                Start with useful defaults,
-                                then customize them however you want.
-                            </p>
-                        </div>
-                    </div>
-
-
-                    <div class="col-sm-6">
-                        <div class="feature-card h-100">
-                            <div class="feature-icon">🎯</div>
-
-                            <h3 class="h5 fw-bold">
-                                Savings goals
-                            </h3>
-
-                            <p class="text-secondary mb-0">
-                                Turn things you want into clear,
-                                trackable savings targets.
-                            </p>
-                        </div>
-                    </div>
-
-
-                    <div class="col-sm-6">
-                        <div class="feature-card h-100">
-                            <div class="feature-icon">✨</div>
-
-                            <h3 class="h5 fw-bold">
-                                Smart insights
-                            </h3>
-
-                            <p class="text-secondary mb-0">
-                                Understand your habits and discover
-                                where you could improve.
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-<section class="container py-5">
-
-    <div class="final-cta text-center">
-
-        <span class="section-label">
-            Start building better money habits
-        </span>
-
-        <h2 class="display-5 fw-bold mt-3">
-            Your money should make sense.
-        </h2>
-
-        <p class="text-secondary mx-auto mt-3 final-cta-text">
-            Set up your allowance, understand where your money goes,
-            and start saving with more confidence.
-        </p>
-
-        <a
-            href="{{ url_for('auth.register') }}"
-            class="btn btn-dark btn-lg rounded-pill px-5 mt-3"
-        >
-            Get started free
+    <footer class="landing-footer">
+        <a class="brand" href="{{ url_for('public.index') }}">
+            <img src="{{ url_for('static', filename='pika-mark.svg') }}" alt="" width="30" height="30">
+            <span>ILI pika</span>
         </a>
-
-        <p class="small text-secondary mt-3">
-            Made for students. Simple to start.
-        </p>
-
-    </div>
-
-</section>
-<footer class="container py-4">
-
-    <div
-        class="footer-content d-flex flex-column flex-md-row
-               justify-content-between align-items-center gap-3"
-    >
-
-        <a
-            href="{{ url_for('public.index') }}"
-            class="fw-bold text-decoration-none text-dark"
-        >
-            Student Money
-        </a>
-
-        <div class="d-flex gap-4">
-
-            <a
-                href="{{ url_for('auth.login') }}"
-                class="footer-link"
-            >
-                Log in
-            </a>
-
-            <a
-                href="{{ url_for('auth.register') }}"
-                class="footer-link"
-            >
-                Register
-            </a>
-
-        </div>
-
-        <span class="small text-secondary">
-            © 2026 Student Money
-        </span>
-
-    </div>
-
-</footer>
+        <span>© 2026 ILI pika</span>
+        <div><a href="{{ url_for('auth.login') }}">{{ t('Log in') }}</a><a href="{{ url_for('auth.register') }}">{{ t('Create account') }}</a></div>
+    </footer>
 </div>
-
 {% endblock %}

@@ -1,10 +1,19 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, before_render_template, g, session
+from flask_login import current_user
 from sqlalchemy import URL
 
 from extensions import db, login_manager, migrate
+from forms import LanguagePreferenceForm
+from localization import (
+    category_name,
+    format_date,
+    localize_form,
+    translate,
+    translate_text,
+)
 
 
 load_dotenv()
@@ -31,6 +40,47 @@ def create_app():
     login_manager.init_app(app)
 
     login_manager.login_view = "auth.login"
+
+    @app.before_request
+    def load_interface_preferences():
+        settings = (
+            current_user.settings
+            if current_user.is_authenticated
+            else None
+        )
+        g.language = (
+            settings.language
+            if settings and settings.language in {"en", "fr", "ar"}
+            else session.get("language", "en")
+        )
+        if g.language not in {"en", "fr", "ar"}:
+            g.language = "en"
+
+        g.direction = "rtl" if g.language == "ar" else "ltr"
+        g.appearance = (
+            settings.appearance
+            if settings and settings.appearance in {"light", "dark", "system"}
+            else "system"
+        )
+
+    @app.context_processor
+    def inject_interface_preferences():
+        return {
+            "appearance": g.get("appearance", "system"),
+            "category_name": category_name,
+            "direction": g.get("direction", "ltr"),
+            "language": g.get("language", "en"),
+            "language_form": LanguagePreferenceForm(),
+            "format_date": format_date,
+            "t": translate,
+            "t_text": translate_text,
+        }
+
+    @before_render_template.connect_via(app)
+    def localize_template_forms(sender, template, context, **extra):
+        for value in context.values():
+            if hasattr(value, "validate") and hasattr(value, "_fields"):
+                localize_form(value)
 
     # Import blueprints here to avoid circular imports
     from routes.auth import auth_bp

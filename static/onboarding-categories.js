@@ -12,7 +12,7 @@ if (categoryContainer && addCategoryButton) {
         const categories = categoryItems();
 
         categories.forEach(function (category, index) {
-            category.querySelectorAll("input, select, label").forEach(function (element) {
+            category.querySelectorAll("[name], [id], label, [aria-controls]").forEach(function (element) {
                 if (element.name) {
                     element.name = element.name.replace(
                         /categories-\d+-/,
@@ -33,6 +33,16 @@ if (categoryContainer && addCategoryButton) {
                         `categories-${index}-`
                     );
                 }
+
+                if (element.hasAttribute("aria-controls")) {
+                    element.setAttribute(
+                        "aria-controls",
+                        element.getAttribute("aria-controls").replace(
+                            /categories-\d+-/,
+                            `categories-${index}-`
+                        )
+                    );
+                }
             });
 
             const removeButton = category.querySelector(".remove-category");
@@ -40,7 +50,7 @@ if (categoryContainer && addCategoryButton) {
                 removeButton.disabled = categories.length === 1;
                 removeButton.setAttribute(
                     "aria-label",
-                    `Remove category ${index + 1}`
+                    `${removeButton.dataset.removeLabel} ${index + 1}`
                 );
             }
         });
@@ -60,6 +70,17 @@ if (categoryContainer && addCategoryButton) {
         category.querySelectorAll(".form-error").forEach(function (error) {
             error.remove();
         });
+
+        category.querySelectorAll("[data-icon-value]").forEach(function (choice) {
+            choice.classList.remove("selected");
+        });
+
+        const iconMenu = category.querySelector("[data-icon-menu]");
+        const iconToggle = category.querySelector("[data-icon-toggle]");
+        if (iconMenu && iconToggle) {
+            iconMenu.hidden = true;
+            iconToggle.setAttribute("aria-expanded", "false");
+        }
     }
 
     addCategoryButton.addEventListener("click", function () {

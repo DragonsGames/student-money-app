@@ -1,0 +1,23 @@
+<div class="icon-picker" data-icon-picker>
+    <div class="icon-picker-row">
+        {{ icon_field(
+            class="form-control onboarding-input" + (" is-invalid" if icon_field.errors else ""),
+            placeholder="🍎",
+            autocomplete="off",
+            inputmode="text"
+        ) }}
+        <button
+            class="icon-picker-toggle"
+            type="button"
+            data-icon-toggle
+            aria-expanded="false"
+            aria-controls="{{ icon_field.id }}-menu"
+            aria-label="{{ t('Choose an icon') }}"
+        >☺</button>
+    </div>
+    <div id="{{ icon_field.id }}-menu" class="icon-picker-menu" data-icon-menu hidden>
+        {% for icon in ['🍎', '🍜', '☕', '🚌', '🚲', '🎓', '📚', '💻', '🎮', '🎵', '🏠', '🛍️', '💊', '🏋️', '✈️', '🎁', '💼', '💰', '🪙', '📦', '🐾', '⭐', '🌱', '🧾'] %}
+            <button class="icon-choice" type="button" data-icon-value="{{ icon }}" aria-label="{{ t('Use icon') }} {{ icon }}">{{ icon }}</button>
+        {% endfor %}
+    </div>
+</div>

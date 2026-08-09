@@ -1,11 +1,11 @@
 {% extends "app_base.html" %}
 {% set active_page = "dashboard" %}
 
-{% block title %}Dashboard | Student Money{% endblock %}
+{% block title %}{{ t('Dashboard') }} | ILI pika{% endblock %}
 
-{% block app_page_title %}Welcome back, {{ display_name }}{% endblock %}
+{% block app_page_title %}{{ t('Welcome back') }}, {{ display_name }}{% endblock %}
 {% block app_page_subtitle %}
-Here's your money overview.
+{{ t("Here's your money overview.") }}
 {% endblock %}
 
 {% block app_content %}
@@ -16,8 +16,8 @@ reviewed and adapted by the project author. -->
     <section class="dashboard-balance-card">
         <div class="dashboard-card-heading">
             <div>
-                <p class="dashboard-eyebrow">Available money</p>
-                <h2>Current balance</h2>
+                <p class="dashboard-eyebrow">{{ t('Available money') }}</p>
+                <h2>{{ t('Current balance') }}</h2>
             </div>
             <span class="dashboard-status-dot" aria-hidden="true"></span>
         </div>
@@ -27,20 +27,20 @@ reviewed and adapted by the project author. -->
             {{ "{:,.3f}".format(financial_summary.current_balance) }}
         </p>
         <p class="dashboard-card-note">
-            Starting balance plus income, minus expenses.
+            {{ t('Starting balance plus income, minus expenses.') }}
         </p>
 
-        <div class="dashboard-balance-meta" aria-label="Transaction totals">
+        <div class="dashboard-balance-meta" aria-label="{{ t('Transaction totals') }}">
             <div>
-                <span>Transaction income</span>
-                <strong>
+                <span>{{ t('Transaction income') }}</span>
+                <strong class="money-value">
                     + {{ "{:,.3f}".format(financial_summary.total_income) }}
                     {{ currency }}
                 </strong>
             </div>
             <div>
-                <span>Transaction spending</span>
-                <strong>
+                <span>{{ t('Transaction spending') }}</span>
+                <strong class="money-value">
                     - {{ "{:,.3f}".format(financial_summary.total_expenses) }}
                     {{ currency }}
                 </strong>
@@ -55,50 +55,51 @@ reviewed and adapted by the project author. -->
     >
         <div>
             <span class="dashboard-insight-symbol" aria-hidden="true">✦</span>
-            <p class="dashboard-eyebrow">Safe to spend</p>
+            <p class="dashboard-eyebrow">{{ t('Safe to spend') }}</p>
             <h2 class="safe-to-spend-value">
                 {{ "{:,.3f}".format(safe_to_spend_summary.safe_to_spend) }}
                 <span>{{ currency }}</span>
             </h2>
             {% if safe_to_spend_summary.is_overcommitted %}
                 <p class="safe-to-spend-helper">
-                    Your reserved savings and remaining budgets exceed your
-                    available balance by
-                    {{ "{:,.3f}".format(safe_to_spend_summary.shortfall) }}
-                    {{ currency }}.
+                    {{ t('Your reserved savings and remaining budgets exceed your available balance by') }}
+                    <span class="money-value">
+                        {{ "{:,.3f}".format(safe_to_spend_summary.shortfall) }}
+                        {{ currency }}
+                    </span>.
                 </p>
             {% else %}
                 <p class="safe-to-spend-helper">
-                    Available after protecting savings and remaining budget amounts.
+                    {{ t('Available after protecting savings and remaining budget amounts.') }}
                 </p>
             {% endif %}
         </div>
 
         <dl class="safe-to-spend-breakdown">
             <div>
-                <dt>Current balance</dt>
-                <dd>
+                <dt>{{ t('Current balance') }}</dt>
+                <dd class="money-value">
                     {{ "{:,.3f}".format(safe_to_spend_summary.current_balance) }}
                     {{ currency }}
                 </dd>
             </div>
             <div>
-                <dt>Savings reserved</dt>
-                <dd>
+                <dt>{{ t('Savings reserved') }}</dt>
+                <dd class="money-value">
                     - {{ "{:,.3f}".format(safe_to_spend_summary.savings_reserved) }}
                     {{ currency }}
                 </dd>
             </div>
             <div>
-                <dt>Budget reserved</dt>
-                <dd>
+                <dt>{{ t('Budget reserved') }}</dt>
+                <dd class="money-value">
                     - {{ "{:,.3f}".format(safe_to_spend_summary.budget_reserved) }}
                     {{ currency }}
                 </dd>
             </div>
         </dl>
 
-        <span class="safe-to-spend-label">Planning estimate</span>
+        <span class="safe-to-spend-label">{{ t('Planning estimate') }}</span>
     </section>
 </div>
 
@@ -108,26 +109,26 @@ by the project author. -->
 <section class="dashboard-section" aria-labelledby="plans-title">
     <div class="dashboard-section-heading">
         <div>
-            <p class="dashboard-eyebrow">Your plans</p>
-            <h2 id="plans-title">Budget & savings</h2>
+            <p class="dashboard-eyebrow">{{ t('Your plans') }}</p>
+            <h2 id="plans-title">{{ t('Budget & savings') }}</h2>
         </div>
-        <span class="dashboard-section-meta">Based on your current records</span>
+        <span class="dashboard-section-meta">{{ t('Based on your current records') }}</span>
     </div>
 
     <div class="dashboard-plan-grid">
         <article class="dashboard-plan-card">
             <div class="dashboard-plan-heading">
                 <span class="summary-symbol summary-symbol-budget" aria-hidden="true">▤</span>
-                <a href="{{ url_for('budgets.budgets') }}">Manage budgets</a>
+                <a href="{{ url_for('budgets.budgets') }}">{{ t('Manage budgets') }}</a>
             </div>
             <p class="dashboard-eyebrow">
-                {{ budget_summary.period|capitalize }} budget
+                {{ t('Weekly') if budget_summary.period == 'weekly' else t('Monthly') }} {{ t('budget') }}
             </p>
 
             <!-- AI assistance: OpenAI Codex helped connect this dashboard card
             to the real current-period budget summary; reviewed by the project author. -->
             {% if budget_summary["items"] %}
-                <p class="dashboard-plan-value">
+                <p class="dashboard-plan-value money-value">
                     <strong>{{ "{:,.3f}".format(budget_summary.total_spent) }}</strong>
                     <span>
                         / {{ "{:,.3f}".format(budget_summary.total_budgeted) }}
@@ -140,34 +141,39 @@ by the project author. -->
                     aria-valuenow="{{ budget_summary.visual_percentage }}"
                     aria-valuemin="0"
                     aria-valuemax="100"
-                    aria-valuetext="{{ '{:,.1f}'.format(budget_summary.total_percentage) }} percent used"
+                    aria-valuetext="{{ t('{percentage} percent used', percentage='{:,.1f}'.format(budget_summary.total_percentage)) }}"
                 >
                     <span style="width: {{ budget_summary.visual_percentage }}%;"></span>
                 </div>
                 <div class="dashboard-plan-stats">
                     <strong>
-                        {{ "{:,.1f}".format(budget_summary.total_percentage) }}% used
+                        <span class="money-value">{{ "{:,.1f}".format(budget_summary.total_percentage) }}%</span>
+                        {{ t('used') }}
                     </strong>
                     {% if budget_summary.overspent %}
                         <span>
-                            {{ "{:,.3f}".format(-budget_summary.total_remaining) }}
-                            {{ currency }} over budget
+                            <span class="money-value">
+                                {{ "{:,.3f}".format(-budget_summary.total_remaining) }} {{ currency }}
+                            </span>
+                            {{ t('over budget') }}
                         </span>
                     {% else %}
                         <span>
-                            {{ "{:,.3f}".format(budget_summary.total_remaining) }}
-                            {{ currency }} remaining
+                            <span class="money-value">
+                                {{ "{:,.3f}".format(budget_summary.total_remaining) }} {{ currency }}
+                            </span>
+                            {{ t('remaining') }}
                         </span>
                     {% endif %}
                 </div>
                 <p class="dashboard-plan-note">
-                    Current-period spending in budgeted categories only.
+                    {{ t('Current-period spending in budgeted categories only.') }}
                 </p>
             {% else %}
                 <div class="dashboard-plan-empty">
-                    <strong>No budget set yet</strong>
-                    <p>Create a budget to plan your current-period spending.</p>
-                    <a href="{{ url_for('budgets.add_budget') }}">Create a budget</a>
+                    <strong>{{ t('No budget set yet') }}</strong>
+                    <p>{{ t('Create a budget to plan your current-period spending.') }}</p>
+                    <a href="{{ url_for('budgets.add_budget') }}">{{ t('Create a budget') }}</a>
                 </div>
             {% endif %}
         </article>
@@ -175,14 +181,14 @@ by the project author. -->
         <article class="dashboard-plan-card">
             <div class="dashboard-plan-heading">
                 <span class="summary-symbol summary-symbol-savings" aria-hidden="true">◇</span>
-                <a href="{{ url_for('savings.savings') }}">Manage savings</a>
+                <a href="{{ url_for('savings.savings') }}">{{ t('Manage savings') }}</a>
             </div>
-            <p class="dashboard-eyebrow">Savings goals</p>
+            <p class="dashboard-eyebrow">{{ t('Savings goals') }}</p>
 
             <!-- AI assistance: OpenAI Codex helped connect this dashboard card
             to real savings-goal progress; reviewed by the project author. -->
             {% if savings_summary["goals"] %}
-                <p class="dashboard-plan-value">
+                <p class="dashboard-plan-value money-value">
                     <strong>{{ "{:,.3f}".format(savings_summary.total_saved) }}</strong>
                     <span>
                         / {{ "{:,.3f}".format(savings_summary.total_target) }}
@@ -195,28 +201,29 @@ by the project author. -->
                     aria-valuenow="{{ savings_summary.visual_percentage }}"
                     aria-valuemin="0"
                     aria-valuemax="100"
-                    aria-valuetext="{{ '{:,.1f}'.format(savings_summary.overall_percentage) }} percent saved"
+                    aria-valuetext="{{ t('{percentage} percent saved', percentage='{:,.1f}'.format(savings_summary.overall_percentage)) }}"
                 >
                     <span style="width: {{ savings_summary.visual_percentage }}%;"></span>
                 </div>
                 <div class="dashboard-plan-stats">
                     <strong>
-                        {{ "{:,.1f}".format(savings_summary.overall_percentage) }}% saved
+                        <span class="money-value">{{ "{:,.1f}".format(savings_summary.overall_percentage) }}%</span>
+                        {{ t('saved') }}
                     </strong>
                     <span>
-                        {{ savings_summary.completed_count }} completed ·
-                        {{ savings_summary.active_count }} active
+                        {{ t('{count} completed', count=savings_summary.completed_count) }} ·
+                        {{ t('{count} active', count=savings_summary.active_count) }}
                     </span>
                 </div>
                 <p class="dashboard-plan-note">
-                    Saved amounts across your monetary targets.
+                    {{ t('Saved amounts across your monetary targets.') }}
                 </p>
             {% else %}
                 <div class="dashboard-plan-empty">
-                    <strong>No savings goals yet</strong>
-                    <p>Set a target for something you are working toward.</p>
+                    <strong>{{ t('No savings goals yet') }}</strong>
+                    <p>{{ t('Set a target for something you are working toward.') }}</p>
                     <a href="{{ url_for('savings.add_goal') }}">
-                        Create a savings goal
+                        {{ t('Create a savings goal') }}
                     </a>
                 </div>
             {% endif %}
@@ -227,26 +234,26 @@ by the project author. -->
 <section class="dashboard-quick-panel" aria-labelledby="quick-actions-title">
     <div class="dashboard-section-heading">
         <div>
-            <p class="dashboard-eyebrow">Keep moving</p>
-            <h2 id="quick-actions-title">Quick actions</h2>
+            <p class="dashboard-eyebrow">{{ t('Keep moving') }}</p>
+            <h2 id="quick-actions-title">{{ t('Quick actions') }}</h2>
         </div>
     </div>
 
-    <nav class="dashboard-quick-grid" aria-label="Dashboard quick actions">
+    <nav class="dashboard-quick-grid" aria-label="{{ t('Dashboard quick actions') }}">
         <a class="dashboard-quick-link" href="{{ url_for('transactions.add_transaction') }}">
             <span aria-hidden="true">+</span>
-            <strong>Add transaction</strong>
-            <small>Record money in or out</small>
+            <strong>{{ t('Add transaction') }}</strong>
+            <small>{{ t('Record money in or out') }}</small>
         </a>
         <a class="dashboard-quick-link" href="{{ url_for('budgets.add_budget') }}">
             <span aria-hidden="true">▤</span>
-            <strong>Add budget</strong>
-            <small>Plan an expense category</small>
+            <strong>{{ t('Add budget') }}</strong>
+            <small>{{ t('Plan an expense category') }}</small>
         </a>
         <a class="dashboard-quick-link" href="{{ url_for('savings.add_goal') }}">
             <span aria-hidden="true">◇</span>
-            <strong>Add savings goal</strong>
-            <small>Start tracking a target</small>
+            <strong>{{ t('Add savings goal') }}</strong>
+            <small>{{ t('Start tracking a target') }}</small>
         </a>
     </nav>
 </section>
@@ -254,12 +261,12 @@ by the project author. -->
 <section class="dashboard-section" aria-labelledby="transactions-title">
     <div class="dashboard-section-heading">
         <div>
-            <p class="dashboard-eyebrow">Activity</p>
-            <h2 id="transactions-title">Recent transactions</h2>
+            <p class="dashboard-eyebrow">{{ t('Activity') }}</p>
+            <h2 id="transactions-title">{{ t('Recent transactions') }}</h2>
         </div>
-        <div class="dashboard-section-links" aria-label="Transaction links">
-            <a href="{{ url_for('transactions.transactions') }}">View transactions</a>
-            <a href="{{ url_for('history.history') }}">View history</a>
+        <div class="dashboard-section-links" aria-label="{{ t('Transaction links') }}">
+            <a href="{{ url_for('transactions.transactions') }}">{{ t('View transactions') }}</a>
+            <a href="{{ url_for('history.history') }}">{{ t('View history') }}</a>
         </div>
     </div>
 
@@ -273,12 +280,12 @@ by the project author. -->
     {% else %}
         <div class="empty-state dashboard-empty-state">
             <span class="empty-state-symbol" aria-hidden="true">↕</span>
-            <h3>No transactions yet</h3>
+            <h3>{{ t('No transactions yet') }}</h3>
             <p>
-                Add your first transaction to begin building your recent activity.
+                {{ t('Add your first transaction to begin building your recent activity.') }}
             </p>
             <a class="btn app-secondary-button" href="{{ url_for('transactions.add_transaction') }}">
-                Add transaction
+                {{ t('Add transaction') }}
             </a>
         </div>
     {% endif %}
@@ -290,12 +297,12 @@ by the project author. -->
 >
     <span class="dashboard-next-step-symbol" aria-hidden="true">→</span>
     <div>
-        <p class="dashboard-eyebrow">Next step</p>
-        <h2 id="next-step-title">{{ next_step["title"] }}</h2>
-        <p>{{ next_step["description"] }}</p>
+        <p class="dashboard-eyebrow">{{ t('Next step') }}</p>
+        <h2 id="next-step-title">{{ t_text(next_step["title"]) }}</h2>
+        <p>{{ t_text(next_step["description"]) }}</p>
     </div>
     <a href="{{ url_for(next_step['endpoint']) }}">
-        {{ next_step["link_label"] }}
+        {{ t_text(next_step["link_label"]) }}
     </a>
 </aside>
 

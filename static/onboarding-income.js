@@ -46,7 +46,7 @@ if (incomeContainer && addSourceButton) {
                 removeButton.disabled = sources.length === 1;
                 removeButton.setAttribute(
                     "aria-label",
-                    `Remove income source ${index + 1}`
+                    `${removeButton.dataset.removeLabel} ${index + 1}`
                 );
             }
         });

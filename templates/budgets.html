@@ -1,15 +1,15 @@
 {% extends "app_base.html" %}
 {% set active_page = "budgets" %}
 
-{% block title %}Budgets | Student Money{% endblock %}
-{% block app_page_title %}Budgets{% endblock %}
+{% block title %}{{ t('Budgets') }} | ILI pika{% endblock %}
+{% block app_page_title %}{{ t('Budgets') }}{% endblock %}
 {% block app_page_subtitle %}
-Plan spending limits for your expense categories using real transaction activity.
+{{ t('Plan spending limits using real expense transactions.') }}
 {% endblock %}
 
 {% block app_header_actions %}
 <a class="btn app-primary-button" href="{{ url_for('budgets.add_budget') }}">
-    <span aria-hidden="true">+</span> Add budget
+    <span aria-hidden="true">+</span> {{ t('Add budget') }}
 </a>
 {% endblock %}
 
@@ -19,11 +19,11 @@ Plan spending limits for your expense categories using real transaction activity
 reviewed and adapted by the project author. -->
 <section class="budget-period-panel">
     <div>
-        <p class="dashboard-eyebrow">Current period</p>
-        <h2>{{ budget_summary.period|capitalize }} budgets</h2>
+        <p class="dashboard-eyebrow">{{ t('Current period') }}</p>
+        <h2>{{ t('Weekly') if budget_summary.period == 'weekly' else t('Monthly') }} {{ t('budgets') }}</h2>
         <p>
-            Spending from {{ budget_summary.period_start.strftime("%b %d, %Y") }}
-            through today.
+            {{ t('Spending from') }} {{ format_date(budget_summary.period_start) }}
+            {{ t('through today.') }}
         </p>
     </div>
 
@@ -39,28 +39,28 @@ reviewed and adapted by the project author. -->
     </form>
 </section>
 
-<section class="budget-summary-grid" aria-label="Budget summary">
+<section class="budget-summary-grid" aria-label="{{ t('Budget summary') }}">
     <article class="budget-summary-card budget-summary-primary">
-        <p>Total budgeted</p>
-        <strong>
+        <p>{{ t('Budgeted') }}</p>
+        <strong class="money-value">
             {{ "{:,.3f}".format(budget_summary.total_budgeted) }}
             <span>{{ currency }}</span>
         </strong>
-        <small>Across budgeted expense categories</small>
+        <small>{{ t('Across budgeted expense categories') }}</small>
     </article>
 
     <article class="budget-summary-card">
-        <p>Spent against budgets</p>
-        <strong>
+        <p>{{ t('Spent') }}</p>
+        <strong class="money-value">
             {{ "{:,.3f}".format(budget_summary.total_spent) }}
             <span>{{ currency }}</span>
         </strong>
-        <small>Unbudgeted expenses are not included here</small>
+        <small>{{ t('Unbudgeted expenses are not included here') }}</small>
     </article>
 
     <article class="budget-summary-card{% if budget_summary.overspent %} budget-summary-over{% endif %}">
-        <p>{% if budget_summary.overspent %}Over budget{% else %}Remaining{% endif %}</p>
-        <strong>
+        <p>{% if budget_summary.overspent %}{{ t('Over budget') }}{% else %}{{ t('Remaining') }}{% endif %}</p>
+        <strong class="money-value">
             {% if budget_summary.overspent %}
                 {{ "{:,.3f}".format(-budget_summary.total_remaining) }}
             {% else %}
@@ -68,17 +68,17 @@ reviewed and adapted by the project author. -->
             {% endif %}
             <span>{{ currency }}</span>
         </strong>
-        <small>{{ "{:,.1f}".format(budget_summary.total_percentage) }}% used</small>
+        <small><span class="money-value">{{ "{:,.1f}".format(budget_summary.total_percentage) }}%</span> {{ t('used') }}</small>
     </article>
 </section>
 
 <section class="budget-list-panel" aria-labelledby="category-budgets-title">
     <div class="budget-list-heading">
         <div>
-            <p class="dashboard-eyebrow">Category limits</p>
-            <h2 id="category-budgets-title">Your budgets</h2>
+            <p class="dashboard-eyebrow">{{ t('Category limits') }}</p>
+            <h2 id="category-budgets-title">{{ t('Your budgets') }}</h2>
         </div>
-        <span>{{ budget_summary["items"]|length }} total</span>
+        <span>{{ t('{count} total', count=budget_summary["items"]|length) }}</span>
     </div>
 
     {% if budget_summary["items"] %}
@@ -90,13 +90,12 @@ reviewed and adapted by the project author. -->
     {% else %}
         <div class="empty-state budget-empty-state">
             <span class="empty-state-symbol" aria-hidden="true">▤</span>
-            <h3>No budget set yet</h3>
+            <h3>{{ t('No budget set yet') }}</h3>
             <p>
-                Add a spending limit for an expense category to begin tracking
-                this {{ budget_summary.period }} period.
+                {{ t('Add a spending limit for an expense category to begin tracking this period.') }}
             </p>
             <a class="btn app-primary-button" href="{{ url_for('budgets.add_budget') }}">
-                Create a budget
+                {{ t('Create a budget') }}
             </a>
         </div>
     {% endif %}

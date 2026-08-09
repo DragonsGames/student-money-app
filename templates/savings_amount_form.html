@@ -1,10 +1,10 @@
 {% extends "app_base.html" %}
 {% set active_page = "savings" %}
 
-{% block title %}Update {{ goal.name }} savings | Student Money{% endblock %}
-{% block app_page_title %}Update saved amount{% endblock %}
+{% block title %}{{ t('Update savings') }} | ILI pika{% endblock %}
+{% block app_page_title %}{{ t('Update saved amount') }}{% endblock %}
 {% block app_page_subtitle %}
-Add to or withdraw from the progress tracked for {{ goal.name }}.
+{{ t('Add to or withdraw from the progress tracked for {goal_name}.', goal_name=goal.name) }}
 {% endblock %}
 
 {% block app_content %}
@@ -13,13 +13,14 @@ Add to or withdraw from the progress tracked for {{ goal.name }}.
 reviewed and adapted by the project author. -->
 <section class="savings-form-card savings-amount-card">
     <div class="savings-current-amount">
-        <p class="dashboard-eyebrow">Currently saved</p>
-        <strong>
+        <p class="dashboard-eyebrow">{{ t('Currently saved') }}</p>
+        <strong class="money-value">
             {{ "{:,.3f}".format(goal.saved_amount) }}
             <span>{{ currency }}</span>
         </strong>
         <small>
-            Target: {{ "{:,.3f}".format(goal.target_amount) }} {{ currency }}
+            {{ t('Target') }}:
+            <span class="money-value">{{ "{:,.3f}".format(goal.target_amount) }} {{ currency }}</span>
         </small>
     </div>
 
@@ -33,32 +34,31 @@ reviewed and adapted by the project author. -->
                     class="form-select onboarding-input" + (" is-invalid" if form.action.errors else "")
                 ) }}
                 {% for error in form.action.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
 
             <div class="onboarding-form-group">
                 {{ form.amount.label(class="form-label onboarding-label") }}
-                <p class="onboarding-helper">A positive amount in {{ currency }}.</p>
+                <p class="onboarding-helper">{{ t('A positive amount in {currency}.', currency=currency) }}</p>
                 {{ form.amount(
-                    class="form-control onboarding-input" + (" is-invalid" if form.amount.errors else ""),
+                    class="form-control onboarding-input money-value" + (" is-invalid" if form.amount.errors else ""),
                     placeholder="100.000",
                     inputmode="decimal"
                 ) }}
                 {% for error in form.amount.errors %}
-                    <div class="form-error" role="alert">{{ error }}</div>
+                    <div class="form-error" role="alert">{{ t_text(error) }}</div>
                 {% endfor %}
             </div>
         </div>
 
         <p class="savings-ledger-note">
-            This updates goal progress only. It does not create a transaction or
-            change your available balance.
+            {{ t('This updates goal progress only. It does not create a transaction or change your available balance.') }}
         </p>
 
         <div class="onboarding-actions savings-form-actions">
             <a class="btn onboarding-back" href="{{ url_for('savings.savings') }}">
-                Cancel
+                {{ t('Cancel') }}
             </a>
             {{ form.submit(class="btn app-primary-button") }}
         </div>

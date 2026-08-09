@@ -11,11 +11,11 @@
     "save_for_something": "Turn a specific plan into a reachable target."
 } %}
 
-{% block title %}Choose your goals | Student Money{% endblock %}
-{% block step_name %}Your goals{% endblock %}
-{% block onboarding_title %}What would you like help with?{% endblock %}
+{% block title %}{{ t('Your goals') }} | ILI pika{% endblock %}
+{% block step_name %}{{ t('Your goals') }}{% endblock %}
+{% block onboarding_title %}{{ t('What would you like help with?') }}{% endblock %}
 {% block onboarding_subtitle %}
-Choose as many as you like. We'll shape your experience around what matters to you.
+{{ t("Choose as many as you like. We'll keep them as simple preferences.") }}
 {% endblock %}
 
 {% block onboarding_content %}
@@ -24,7 +24,7 @@ Choose as many as you like. We'll shape your experience around what matters to y
     {{ form.hidden_tag() }}
 
     <fieldset class="onboarding-fieldset">
-        <legend class="visually-hidden">Money goals</legend>
+        <legend class="visually-hidden">{{ t('Goals') }}</legend>
 
         <div class="row g-3">
             {% for goal in form.goals %}
@@ -37,7 +37,7 @@ Choose as many as you like. We'll shape your experience around what matters to y
                                     {{ goal.label.text }}
                                 </span>
                                 <span class="onboarding-choice-description">
-                                    {{ goal_descriptions[goal.data] }}
+                                    {{ t_text(goal_descriptions[goal.data]) }}
                                 </span>
                             </span>
                             <span class="onboarding-choice-check" aria-hidden="true">✓</span>
@@ -48,13 +48,13 @@ Choose as many as you like. We'll shape your experience around what matters to y
         </div>
 
         {% for error in form.goals.errors %}
-            <div class="form-error mt-3" role="alert">{{ error }}</div>
+            <div class="form-error mt-3" role="alert">{{ t_text(error) }}</div>
         {% endfor %}
     </fieldset>
 
     <div class="onboarding-actions">
         <a class="btn onboarding-back" href="{{ url_for('onboarding.onboarding') }}">
-            <span aria-hidden="true">←</span> Back
+            {{ t('Back') }}
         </a>
         {{ form.submit(class="btn onboarding-primary") }}
     </div>

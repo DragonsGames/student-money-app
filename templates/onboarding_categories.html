@@ -2,84 +2,48 @@
 {% set onboarding_step = 5 %}
 {% set onboarding_shell_class = "onboarding-shell-wide" %}
 
-{% block title %}Choose your categories | Student Money{% endblock %}
-{% block step_name %}Categories{% endblock %}
-{% block onboarding_title %}Make your money feel organized{% endblock %}
-{% block onboarding_subtitle %}
-We've prepared useful defaults. Rename, remove, or add categories to match your life.
-{% endblock %}
+{% block title %}{{ t('Categories') }} | ILI pika{% endblock %}
+{% block step_name %}{{ t('Categories') }}{% endblock %}
+{% block onboarding_title %}{{ t('Make your money feel organized') }}{% endblock %}
+{% block onboarding_subtitle %}{{ t('Keep the useful defaults, rename them, or add your own.') }}{% endblock %}
 
 {% block onboarding_content %}
-
 <form method="post">
     {{ form.hidden_tag() }}
-
     <div id="categories" class="dynamic-item-list category-list">
         {% for category in form.categories %}
             <article class="dynamic-item-card category">
                 <div class="category-fields">
                     <div class="category-icon-field">
                         {{ category.form.icon.label(class="visually-hidden") }}
-                        {{ category.form.icon(
-                            class="form-control onboarding-input category-icon-input" + (" is-invalid" if category.form.icon.errors else ""),
-                            placeholder="★",
-                            aria_label="Category icon"
-                        ) }}
-                        {% for error in category.form.icon.errors %}
-                            <div class="form-error" role="alert">{{ error }}</div>
-                        {% endfor %}
+                        {% set icon_field = category.form.icon %}{% include "_icon_picker.html" %}
+                        {% for error in category.form.icon.errors %}<p class="form-error" role="alert">{{ t_text(error) }}</p>{% endfor %}
                     </div>
-
                     <div class="category-name-field">
                         {{ category.form.name.label(class="form-label onboarding-label") }}
-                        {{ category.form.name(
-                            class="form-control onboarding-input" + (" is-invalid" if category.form.name.errors else ""),
-                            placeholder="Category name",
-                            autocomplete="off"
-                        ) }}
-                        {% for error in category.form.name.errors %}
-                            <div class="form-error" role="alert">{{ error }}</div>
-                        {% endfor %}
+                        {{ category.form.name(class="form-control onboarding-input" + (" is-invalid" if category.form.name.errors else ""), placeholder=t('Category name'), autocomplete="off") }}
+                        {% for error in category.form.name.errors %}<p class="form-error" role="alert">{{ t_text(error) }}</p>{% endfor %}
                     </div>
-
                     <div class="category-type-field">
                         {{ category.form.category_type.label(class="form-label onboarding-label") }}
-                        {{ category.form.category_type(
-                            class="form-select onboarding-input" + (" is-invalid" if category.form.category_type.errors else "")
-                        ) }}
-                        {% for error in category.form.category_type.errors %}
-                            <div class="form-error" role="alert">{{ error }}</div>
-                        {% endfor %}
+                        {{ category.form.category_type(class="form-select onboarding-input" + (" is-invalid" if category.form.category_type.errors else "")) }}
+                        {% for error in category.form.category_type.errors %}<p class="form-error" role="alert">{{ t_text(error) }}</p>{% endfor %}
                     </div>
-
-                    <button
-                        type="button"
-                        class="btn remove-item-button remove-category"
-                        aria-label="Remove category {{ loop.index }}"
-                    >
-                        Remove
-                    </button>
+                    <button type="button" class="btn remove-item-button remove-category" data-remove-label="{{ t('Remove category') }}" aria-label="{{ t('Remove category') }} {{ loop.index }}">{{ t('Remove') }}</button>
                 </div>
             </article>
         {% endfor %}
     </div>
-
-    <button type="button" id="add-category" class="btn add-item-button">
-        <span aria-hidden="true">+</span> Add category
-    </button>
-
+    <button type="button" id="add-category" class="btn add-item-button"><span aria-hidden="true">+</span> {{ t('Add category') }}</button>
     <div class="onboarding-actions">
-        <a class="btn onboarding-back" href="{{ url_for('onboarding.onboarding_balance') }}">
-            <span aria-hidden="true">←</span> Back
-        </a>
+        <a class="btn onboarding-back" href="{{ url_for('onboarding.onboarding_balance') }}">{{ t('Back') }}</a>
         {{ form.submit(class="btn onboarding-primary onboarding-finish") }}
     </div>
 </form>
-
 {% endblock %}
 
-{% block reassurance %}Your setup is almost ready.{% endblock %}
-
+{% block reassurance %}{{ t('Your setup is almost ready.') }}{% endblock %}
 {% block scripts %}
+<script src="{{ url_for('static', filename='pickers.js') }}"></script>
 <script src="{{ url_for('static', filename='onboarding-categories.js') }}"></script>
 {% endblock %}

@@ -1,15 +1,15 @@
 {% extends "app_base.html" %}
 {% set active_page = "savings" %}
 
-{% block title %}Savings goals | Student Money{% endblock %}
-{% block app_page_title %}Savings goals{% endblock %}
+{% block title %}{{ t('Savings goals') }} | ILI pika{% endblock %}
+{% block app_page_title %}{{ t('Savings goals') }}{% endblock %}
 {% block app_page_subtitle %}
-Track money you have earmarked for personal targets without changing your transaction balance.
+{{ t('Track money set aside for personal targets without changing your transaction balance.') }}
 {% endblock %}
 
 {% block app_header_actions %}
 <a class="btn app-primary-button" href="{{ url_for('savings.add_goal') }}">
-    <span aria-hidden="true">+</span> Add savings goal
+    <span aria-hidden="true">+</span> {{ t('Add savings goal') }}
 </a>
 {% endblock %}
 
@@ -17,48 +17,48 @@ Track money you have earmarked for personal targets without changing your transa
 
 <!-- AI assistance: OpenAI Codex helped draft this savings-goal UI;
 reviewed and adapted by the project author. -->
-<section class="savings-summary-grid" aria-label="Savings summary">
+<section class="savings-summary-grid" aria-label="{{ t('Savings summary') }}">
     <article class="savings-summary-card savings-summary-primary">
-        <p>Total saved</p>
-        <strong>
+        <p>{{ t('Saved') }}</p>
+        <strong class="money-value">
             {{ "{:,.3f}".format(savings_summary.total_saved) }}
             <span>{{ currency }}</span>
         </strong>
-        <small>Progress earmarked across all goals</small>
+        <small>{{ t('Progress earmarked across all goals') }}</small>
     </article>
 
     <article class="savings-summary-card">
-        <p>Total target</p>
-        <strong>
+        <p>{{ t('Target') }}</p>
+        <strong class="money-value">
             {{ "{:,.3f}".format(savings_summary.total_target) }}
             <span>{{ currency }}</span>
         </strong>
-        <small>{{ "{:,.1f}".format(savings_summary.overall_percentage) }}% saved overall</small>
+        <small><span class="money-value">{{ "{:,.1f}".format(savings_summary.overall_percentage) }}%</span> {{ t('saved overall') }}</small>
     </article>
 
     <article class="savings-summary-card">
-        <p>Remaining</p>
+        <p>{{ t('Remaining') }}</p>
         <strong>
             {{ "{:,.3f}".format(savings_summary.overall_remaining) }}
             <span>{{ currency }}</span>
         </strong>
-        <small>Overfunded goals do not reduce other goals</small>
+        <small>{{ t('Overfunded goals do not reduce other goals') }}</small>
     </article>
 
     <article class="savings-summary-card">
-        <p>Completed goals</p>
+        <p>{{ t('Completed') }}</p>
         <strong>{{ savings_summary.completed_count }}</strong>
-        <small>{{ savings_summary.active_count }} still active</small>
+        <small>{{ t('{count} still active', count=savings_summary.active_count) }}</small>
     </article>
 </section>
 
 <section class="savings-list-panel" aria-labelledby="savings-goals-title">
     <div class="savings-list-heading">
         <div>
-            <p class="dashboard-eyebrow">Your targets</p>
-            <h2 id="savings-goals-title">Goal progress</h2>
+            <p class="dashboard-eyebrow">{{ t('Your targets') }}</p>
+            <h2 id="savings-goals-title">{{ t('Progress') }}</h2>
         </div>
-        <span>{{ savings_summary["goals"]|length }} total</span>
+        <span>{{ t('{count} total', count=savings_summary["goals"]|length) }}</span>
     </div>
 
     {% if savings_summary["goals"] %}
@@ -68,19 +68,17 @@ reviewed and adapted by the project author. -->
             {% endfor %}
         </div>
         <p class="savings-delete-warning">
-            Deleting a goal removes only its tracking record. It does not alter
-            transactions, balances, categories, or budgets.
+            {{ t('Deleting a goal removes only its tracking record. It does not alter transactions, balances, categories, or budgets.') }}
         </p>
     {% else %}
         <div class="empty-state savings-empty-state">
             <span class="empty-state-symbol" aria-hidden="true">◇</span>
-            <h3>No savings goals yet</h3>
+            <h3>{{ t('No savings goals yet') }}</h3>
             <p>
-                Create a target to track money you have set aside for something
-                important to you.
+                {{ t('Create a target for money set aside for something important to you.') }}
             </p>
             <a class="btn app-primary-button" href="{{ url_for('savings.add_goal') }}">
-                Create a savings goal
+                {{ t('Create a savings goal') }}
             </a>
         </div>
     {% endif %}
