@@ -52,6 +52,64 @@ def dashboard():
         settings.budget_period
     )
     savings_summary = get_savings_summary(current_user.id)
+    safe_to_spend_summary = get_safe_to_spend_summary(
+        financial_summary,
+        budget_summary,
+        savings_summary,
+    )
+
+    # AI assistance: OpenAI Codex helped draft this deterministic Dashboard
+    # next-step selection; reviewed and adapted by the project author.
+    if not recent_transactions:
+        next_step = {
+            "title": "Add your first transaction",
+            "description": (
+                "Start tracking money that enters or leaves your balance."
+            ),
+            "endpoint": "transactions.add_transaction",
+            "link_label": "Add transaction",
+            "tone": "default",
+        }
+    elif safe_to_spend_summary["is_overcommitted"]:
+        next_step = {
+            "title": "Review your reserved money",
+            "description": (
+                "Your planned savings and remaining budgets exceed your "
+                "available balance."
+            ),
+            "endpoint": "budgets.budgets",
+            "link_label": "Review budgets",
+            "tone": "warning",
+        }
+    elif not budget_summary["items"]:
+        next_step = {
+            "title": "Create a spending plan",
+            "description": "Add a budget to plan your current-period spending.",
+            "endpoint": "budgets.add_budget",
+            "link_label": "Create a budget",
+            "tone": "default",
+        }
+    elif not savings_summary["goals"]:
+        next_step = {
+            "title": "Choose something to save toward",
+            "description": (
+                "Set a savings goal for something you are working toward."
+            ),
+            "endpoint": "savings.add_goal",
+            "link_label": "Create a savings goal",
+            "tone": "default",
+        }
+    else:
+        next_step = {
+            "title": "Your overview is ready",
+            "description": (
+                "Keep recording transactions so your money overview stays "
+                "accurate."
+            ),
+            "endpoint": "transactions.add_transaction",
+            "link_label": "Add transaction",
+            "tone": "positive",
+        }
 
     return render_template(
         "dashboard.html",
@@ -61,11 +119,8 @@ def dashboard():
         financial_summary=financial_summary,
         budget_summary=budget_summary,
         savings_summary=savings_summary,
-        safe_to_spend_summary=get_safe_to_spend_summary(
-            financial_summary,
-            budget_summary,
-            savings_summary,
-        ),
+        safe_to_spend_summary=safe_to_spend_summary,
+        next_step=next_step,
         recent_transactions=recent_transactions,
         logout_form=LogoutForm(),
     )
