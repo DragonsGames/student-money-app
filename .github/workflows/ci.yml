@@ -33,9 +33,9 @@ jobs:
       COOKIE_SECURE: "false"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
           cache: pip
@@ -59,4 +59,4 @@ jobs:
         run: flask --app app db upgrade
 
       - name: Run tests
-        run: pytest --cov=app --cov=forms --cov=localization --cov=models --cov=routes --cov=services --cov-report=term-missing
+        run: python -m pytest --cov=app --cov=forms --cov=localization --cov=models --cov=routes --cov=services --cov-report=term-missing
