@@ -89,7 +89,6 @@ TRANSLATIONS = {
         "Use the amount you currently consider available to spend or save.": "Utilisez le montant que vous considérez disponible pour dépenser ou épargner.",
         "A simple starting point": "Un point de départ simple",
         "You can update it later as your balance changes.": "Vous pourrez le modifier lorsque votre solde évoluera.",
-        "Categories": "Catégories",
         "Make your money feel organized": "Organisez votre argent à votre façon",
         "Keep the useful defaults, rename them, or add your own.": "Gardez les catégories utiles, renommez-les ou ajoutez les vôtres.",
         "Add category": "Ajouter une catégorie",
@@ -136,7 +135,6 @@ TRANSLATIONS = {
         "Expense": "Dépense",
         "Income": "Revenu",
         "Expenses": "Dépenses",
-        "All transactions": "Toutes les transactions",
         "Choose a category": "Choisir une catégorie",
         "Choose an expense category": "Choisir une catégorie de dépense",
         "Transaction type": "Type de transaction",
@@ -292,7 +290,6 @@ TRANSLATIONS = {
         "Use the amount you currently consider available to spend or save.": "استخدم المبلغ الذي تعتبره متاحًا للإنفاق أو الادخار الآن.",
         "A simple starting point": "نقطة بداية بسيطة",
         "You can update it later as your balance changes.": "يمكنك تحديثه لاحقًا عندما يتغير رصيدك.",
-        "Categories": "الفئات",
         "Make your money feel organized": "نظم أموالك بطريقتك",
         "Keep the useful defaults, rename them, or add your own.": "احتفظ بالفئات المفيدة أو أعد تسميتها أو أضف فئاتك.",
         "Add category": "إضافة فئة",
@@ -414,6 +411,16 @@ TRANSLATIONS = {
 
 
 TRANSLATIONS["fr"].update({
+    "Email must be 255 characters or fewer.": "L’adresse e-mail ne doit pas dépasser 255 caractères.",
+    "Budget progress": "Progression du budget",
+    "Savings progress": "Progression de l’épargne",
+    "Page not found": "Page introuvable",
+    "The page you requested could not be found.": "La page demandée est introuvable.",
+    "Method not allowed": "Méthode non autorisée",
+    "That action is not available for this request.": "Cette action n’est pas disponible pour cette requête.",
+    "Something went wrong": "Un problème est survenu",
+    "Please try again in a moment.": "Veuillez réessayer dans un instant.",
+    "Return home": "Retour à l’accueil",
     "A calmer way to keep up with your money.": "Une façon plus sereine de suivre votre argent.",
     "A record you can understand in seconds.": "Un suivi compréhensible en quelques secondes.",
     "Add": "Ajouter",
@@ -500,6 +507,16 @@ TRANSLATIONS["fr"].update({
 })
 
 TRANSLATIONS["ar"].update({
+    "Email must be 255 characters or fewer.": "يجب ألا يتجاوز البريد الإلكتروني 255 حرفًا.",
+    "Budget progress": "تقدم الميزانية",
+    "Savings progress": "تقدم الادخار",
+    "Page not found": "الصفحة غير موجودة",
+    "The page you requested could not be found.": "تعذر العثور على الصفحة المطلوبة.",
+    "Method not allowed": "الطريقة غير مسموحة",
+    "That action is not available for this request.": "هذا الإجراء غير متاح لهذا الطلب.",
+    "Something went wrong": "حدث خطأ ما",
+    "Please try again in a moment.": "يرجى المحاولة مرة أخرى بعد قليل.",
+    "Return home": "العودة إلى الرئيسية",
     "A calmer way to keep up with your money.": "طريقة أهدأ لمتابعة أموالك.",
     "A record you can understand in seconds.": "سجل تفهمه خلال ثوانٍ.",
     "Add": "إضافة",

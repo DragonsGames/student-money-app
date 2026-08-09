@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}{{ status_code }} | ILI pika{% endblock %}
+{% block body_class %}error-page{% endblock %}
+
+{% block content %}
+<main id="main-content" class="error-shell">
+    <a class="brand-lockup" href="{{ url_for('public.index') }}">
+        <img src="{{ url_for('static', filename='pika-mark.svg') }}" alt="">
+        <span>ILI pika</span>
+    </a>
+    <p class="eyebrow">{{ status_code }}</p>
+    <h1>{{ t(heading) }}</h1>
+    <p>{{ t(message) }}</p>
+    <a class="btn app-primary-button" href="{{ url_for('public.index') }}">
+        {{ t('Return home') }}
+    </a>
+</main>
+{% endblock %}

@@ -165,20 +165,18 @@ def onboarding_categories():
         current_user.categories.clear()
 
         for data in form.categories.data:
+            matches_starter = any(
+                data["name"] == starter["name"]
+                and data["category_type"] == starter["category_type"]
+                and data["icon"] == starter["icon"]
+                for starter in default_categories
+            )
+
             category = Category(
                 name=data["name"],
                 category_type=data["category_type"],
                 icon=data["icon"],
-                is_default=data["name"] in {
-                    "Food",
-                    "Transport",
-                    "School",
-                    "Entertainment",
-                    "Shopping",
-                    "Other",
-                    "Allowance",
-                    "Work"
-                }
+                is_default=matches_starter,
             )
 
             current_user.categories.append(category)

@@ -142,29 +142,58 @@ html[lang="ar"] .hero-copy h1 {
     margin-block: .7rem .3rem;
 }
 
-.sample-progress,
-.dashboard-plan-progress,
-.budget-progress-track,
-.savings-progress-track {
+.sample-progress {
     height: .45rem;
     overflow: hidden;
     background: var(--surface-muted);
     border-radius: 999px;
 }
 
-.sample-progress span,
-.dashboard-plan-progress span,
-.budget-progress-track span,
-.savings-progress-track span {
+.dashboard-plan-progress,
+.budget-progress-track,
+.savings-progress-track {
+    width: 100%;
+    height: .45rem;
+    appearance: none;
+    overflow: hidden;
+    border: 0;
+    border-radius: 999px;
+}
+
+.sample-progress span {
     height: 100%;
     display: block;
     background: var(--accent);
     border-radius: inherit;
 }
 
+.dashboard-plan-progress::-webkit-progress-bar,
+.budget-progress-track::-webkit-progress-bar,
+.savings-progress-track::-webkit-progress-bar {
+    background: var(--surface-muted);
+    border-radius: inherit;
+}
+
+.dashboard-plan-progress::-webkit-progress-value,
+.budget-progress-track::-webkit-progress-value {
+    background: var(--accent);
+    border-radius: inherit;
+}
+
+.dashboard-plan-progress::-moz-progress-bar,
+.budget-progress-track::-moz-progress-bar {
+    background: var(--accent);
+    border-radius: inherit;
+}
+
 .sample-progress.savings span,
-.dashboard-plan-progress-savings span,
-.savings-progress-track span {
+.dashboard-plan-progress-savings::-webkit-progress-value,
+.savings-progress-track::-webkit-progress-value {
+    background: var(--positive);
+}
+
+.dashboard-plan-progress-savings::-moz-progress-bar,
+.savings-progress-track::-moz-progress-bar {
     background: var(--positive);
 }
 
@@ -1222,8 +1251,27 @@ html[dir="rtl"] .category-card-actions {
     border-block-start: 1px solid var(--border);
 }
 
-.budget-progress-overspent span {
+.budget-progress-overspent::-webkit-progress-value {
     background: var(--warning);
+}
+
+.budget-progress-overspent::-moz-progress-bar {
+    background: var(--warning);
+}
+
+.error-shell {
+    width: min(100% - 2rem, 36rem);
+    min-height: 100vh;
+    margin-inline: auto;
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 1rem;
+}
+
+.error-shell h1,
+.error-shell p {
+    margin: 0;
 }
 
 .savings-goal-metrics {

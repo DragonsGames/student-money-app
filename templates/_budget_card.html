@@ -22,16 +22,13 @@
         <span>/ {{ "{:,.3f}".format(budget.amount) }} {{ currency }}</span>
     </p>
 
-    <div
+    <progress
         class="budget-progress-track{% if item.overspent %} budget-progress-overspent{% endif %}"
-        role="progressbar"
-        aria-valuenow="{{ item.visual_percentage }}"
-        aria-valuemin="0"
-        aria-valuemax="100"
+        value="{{ item.visual_percentage }}"
+        max="100"
+        aria-label="{{ t('Budget progress') }}"
         aria-valuetext="{{ t('{percentage} percent used', percentage='{:,.1f}'.format(item.percentage)) }}"
-    >
-        <span style="width: {{ item.visual_percentage }}%;"></span>
-    </div>
+    >{{ item.visual_percentage }}%</progress>
 
     <div class="budget-card-metrics">
         <strong><span class="money-value">{{ "{:,.1f}".format(item.percentage) }}%</span> {{ t('used') }}</strong>
@@ -59,7 +56,9 @@
             method="post"
             action="{{ url_for('budgets.delete_budget', budget_id=budget.id) }}"
         >
-            {{ delete_form.csrf_token(id="delete-budget-csrf-" ~ budget.id) }}
+            {% if delete_form.csrf_token is defined %}
+                {{ delete_form.csrf_token(id="delete-budget-csrf-" ~ budget.id) }}
+            {% endif %}
             <button type="submit" class="budget-delete-button" data-confirm="{{ t('Delete this record? This cannot be undone.') }}">{{ t('Delete') }}</button>
         </form>
     </div>

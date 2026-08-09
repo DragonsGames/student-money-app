@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask, before_render_template, g, session
+from flask import Flask, before_render_template, g, render_template, session
 from flask_login import current_user
 from sqlalchemy import URL
 
@@ -19,20 +19,58 @@ from localization import (
 load_dotenv()
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
 
-    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+    database_settings = {
+        "DB_USER": os.getenv("DB_USER"),
+        "DB_PASSWORD": os.getenv("DB_PASSWORD"),
+        "DB_HOST": os.getenv("DB_HOST"),
+        "DB_NAME": os.getenv("DB_NAME"),
+    }
+    if test_config is None:
+        missing_settings = [
+            name
+            for name, value in database_settings.items()
+            if not value
+        ]
+        if missing_settings:
+            missing_names = ", ".join(missing_settings)
+            raise RuntimeError(
+                f"Missing required database configuration: {missing_names}."
+            )
+
+    cookie_secure = os.getenv("COOKIE_SECURE", "false").lower() in {
+        "1",
+        "true",
+        "yes",
+    }
 
     database_url = URL.create(
         drivername="mysql+pymysql",
-        username=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        database=os.getenv("DB_NAME"),
+        username=database_settings["DB_USER"],
+        password=database_settings["DB_PASSWORD"],
+        host=database_settings["DB_HOST"],
+        database=database_settings["DB_NAME"],
     )
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+    app.config.from_mapping(
+        SECRET_KEY=os.getenv("SECRET_KEY"),
+        SQLALCHEMY_DATABASE_URI=database_url,
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",
+        SESSION_COOKIE_SECURE=cookie_secure,
+        REMEMBER_COOKIE_HTTPONLY=True,
+        REMEMBER_COOKIE_SAMESITE="Lax",
+        REMEMBER_COOKIE_SECURE=cookie_secure,
+    )
+
+    if test_config is not None:
+        app.config.update(test_config)
+
+    if not app.config["SECRET_KEY"]:
+        raise RuntimeError("SECRET_KEY must be configured.")
 
     # Connect extensions
     db.init_app(app)
@@ -105,6 +143,51 @@ def create_app():
     app.register_blueprint(savings_bp)
     app.register_blueprint(settings_bp)
 
+    @app.after_request
+    def add_security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault(
+            "Referrer-Policy",
+            "strict-origin-when-cross-origin",
+        )
+        response.headers.setdefault(
+            "Permissions-Policy",
+            "camera=(), microphone=(), geolocation=()",
+        )
+
+        if current_user.is_authenticated and response.mimetype == "text/html":
+            response.headers["Cache-Control"] = "no-store, private"
+
+        return response
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return render_template(
+            "error.html",
+            status_code=404,
+            heading="Page not found",
+            message="The page you requested could not be found.",
+        ), 404
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return render_template(
+            "error.html",
+            status_code=405,
+            heading="Method not allowed",
+            message="That action is not available for this request.",
+        ), 405
+
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        return render_template(
+            "error.html",
+            status_code=500,
+            heading="Something went wrong",
+            message="Please try again in a moment.",
+        ), 500
+
     return app
 
 
@@ -119,4 +202,4 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

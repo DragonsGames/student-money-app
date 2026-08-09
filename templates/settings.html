@@ -34,7 +34,7 @@ reviewed and adapted by the project author. -->
                 <h2 id="profile-settings-title">{{ t('How ILI pika addresses you') }}</h2>
             </header>
             <form method="post" action="{{ url_for('settings.update_profile') }}">
-                {{ profile_form.csrf_token(id="profile-settings-csrf") }}
+                {% if profile_form.csrf_token is defined %}{{ profile_form.csrf_token(id="profile-settings-csrf") }}{% endif %}
                 <div class="onboarding-form-group">
                     {{ profile_form.display_name.label(class="form-label onboarding-label") }}
                     <p class="onboarding-helper">{{ t('Optional. Leave blank to use your email.') }}</p>
@@ -56,7 +56,7 @@ reviewed and adapted by the project author. -->
                 <span>{{ t('The saved theme and language follow your account on this device.') }}</span>
             </header>
             <form method="post" action="{{ url_for('settings.update_preferences') }}">
-                {{ preference_form.csrf_token(id="preference-settings-csrf") }}
+                {% if preference_form.csrf_token is defined %}{{ preference_form.csrf_token(id="preference-settings-csrf") }}{% endif %}
                 <div class="preference-preview">
                     <div class="onboarding-form-group">
                         {{ preference_form.appearance.label(class="form-label onboarding-label") }}
@@ -79,7 +79,7 @@ reviewed and adapted by the project author. -->
                 <h2 id="money-settings-title">{{ t('Your financial starting point') }}</h2>
             </header>
             <form method="post" action="{{ url_for('settings.update_money') }}">
-                {{ money_form.csrf_token(id="money-settings-csrf") }}
+                {% if money_form.csrf_token is defined %}{{ money_form.csrf_token(id="money-settings-csrf") }}{% endif %}
                 <div class="settings-money-grid">
                     <div class="onboarding-form-group">
                         {{ money_form.currency.label(class="form-label onboarding-label") }}
@@ -111,7 +111,7 @@ reviewed and adapted by the project author. -->
                 <span>{{ t('These are preferences. Monetary targets stay on the Savings page.') }}</span>
             </header>
             <form method="post" action="{{ url_for('settings.update_goals') }}">
-                {{ goals_form.csrf_token(id="goals-settings-csrf") }}
+                {% if goals_form.csrf_token is defined %}{{ goals_form.csrf_token(id="goals-settings-csrf") }}{% endif %}
                 <fieldset class="onboarding-fieldset">
                     <legend class="visually-hidden">{{ t('Goals') }}</legend>
                     <div class="settings-goal-grid">
@@ -149,7 +149,7 @@ reviewed and adapted by the project author. -->
                             <span class="settings-recurring-badge">{{ t('Recurring') if source.is_recurring else t('Non-recurring') }}</span>
                             <div class="settings-income-actions">
                                 <a class="settings-edit-link" href="{{ url_for('settings.edit_income_source', source_id=source.id) }}">{{ t('Edit') }}</a>
-                                <form method="post" action="{{ url_for('settings.delete_income_source', source_id=source.id) }}">{{ delete_form.csrf_token(id="delete-income-source-csrf-" ~ source.id) }}<button type="submit" class="settings-delete-button" data-confirm="{{ t('Delete this record? This cannot be undone.') }}">{{ t('Delete') }}</button></form>
+                                <form method="post" action="{{ url_for('settings.delete_income_source', source_id=source.id) }}">{% if delete_form.csrf_token is defined %}{{ delete_form.csrf_token(id="delete-income-source-csrf-" ~ source.id) }}{% endif %}<button type="submit" class="settings-delete-button" data-confirm="{{ t('Delete this record? This cannot be undone.') }}">{{ t('Delete') }}</button></form>
                             </div>
                         </article>
                     {% endfor %}

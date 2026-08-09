@@ -39,7 +39,9 @@
                 method="post"
                 action="{{ url_for('transactions.delete_transaction', transaction_id=transaction.id) }}"
             >
-                {{ delete_form.csrf_token(id="delete-csrf-" ~ transaction.id) }}
+                {% if delete_form.csrf_token is defined %}
+                    {{ delete_form.csrf_token(id="delete-csrf-" ~ transaction.id) }}
+                {% endif %}
                 <button type="submit" class="transaction-delete-button" data-confirm="{{ t('Delete this record? This cannot be undone.') }}">
                     {{ t('Delete') }}
                 </button>

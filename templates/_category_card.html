@@ -46,7 +46,9 @@
                 method="post"
                 action="{{ url_for('categories.delete_category', category_id=category.id) }}"
             >
-                {{ delete_form.csrf_token(id="delete-category-csrf-" ~ category.id) }}
+                {% if delete_form.csrf_token is defined %}
+                    {{ delete_form.csrf_token(id="delete-category-csrf-" ~ category.id) }}
+                {% endif %}
                 <button type="submit" class="category-delete-button" data-confirm="{{ t('Delete this record? This cannot be undone.') }}">
                     {{ t('Delete') }}
                 </button>

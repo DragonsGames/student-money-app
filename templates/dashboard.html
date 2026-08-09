@@ -135,16 +135,13 @@ by the project author. -->
                         {{ currency }}
                     </span>
                 </p>
-                <div
+                <progress
                     class="dashboard-plan-progress dashboard-plan-progress-budget"
-                    role="progressbar"
-                    aria-valuenow="{{ budget_summary.visual_percentage }}"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
+                    value="{{ budget_summary.visual_percentage }}"
+                    max="100"
+                    aria-label="{{ t('Budget progress') }}"
                     aria-valuetext="{{ t('{percentage} percent used', percentage='{:,.1f}'.format(budget_summary.total_percentage)) }}"
-                >
-                    <span style="width: {{ budget_summary.visual_percentage }}%;"></span>
-                </div>
+                >{{ budget_summary.visual_percentage }}%</progress>
                 <div class="dashboard-plan-stats">
                     <strong>
                         <span class="money-value">{{ "{:,.1f}".format(budget_summary.total_percentage) }}%</span>
@@ -195,16 +192,13 @@ by the project author. -->
                         {{ currency }}
                     </span>
                 </p>
-                <div
+                <progress
                     class="dashboard-plan-progress dashboard-plan-progress-savings"
-                    role="progressbar"
-                    aria-valuenow="{{ savings_summary.visual_percentage }}"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
+                    value="{{ savings_summary.visual_percentage }}"
+                    max="100"
+                    aria-label="{{ t('Savings progress') }}"
                     aria-valuetext="{{ t('{percentage} percent saved', percentage='{:,.1f}'.format(savings_summary.overall_percentage)) }}"
-                >
-                    <span style="width: {{ savings_summary.visual_percentage }}%;"></span>
-                </div>
+                >{{ savings_summary.visual_percentage }}%</progress>
                 <div class="dashboard-plan-stats">
                     <strong>
                         <span class="money-value">{{ "{:,.1f}".format(savings_summary.overall_percentage) }}%</span>

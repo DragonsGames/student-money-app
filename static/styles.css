@@ -622,19 +622,27 @@ html[dir="rtl"] .language-control select {
 }
 
 .onboarding-progress {
+    width: 100%;
     height: .35rem;
+    appearance: none;
     overflow: hidden;
-    background: var(--surface-muted);
+    border: 0;
     border-radius: 999px;
 }
 
-.onboarding-progress > span {
-    width: calc(var(--step) * 20%);
-    height: 100%;
-    display: block;
+.onboarding-progress::-webkit-progress-bar {
+    background: var(--surface-muted);
+    border-radius: inherit;
+}
+
+.onboarding-progress::-webkit-progress-value {
     background: var(--accent);
     border-radius: inherit;
-    transition: width var(--motion-normal);
+}
+
+.onboarding-progress::-moz-progress-bar {
+    background: var(--accent);
+    border-radius: inherit;
 }
 
 .onboarding-content {

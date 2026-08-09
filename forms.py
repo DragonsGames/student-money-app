@@ -36,7 +36,11 @@ class RegistrationForm(FlaskForm):
         "Email",
         validators=[
             DataRequired(),
-            Email()
+            Email(),
+            Length(
+                max=255,
+                message="Email must be 255 characters or fewer."
+            ),
         ]
     )
 
@@ -63,7 +67,11 @@ class LoginForm(FlaskForm):
         "Email",
         validators=[
             DataRequired(),
-            Email()
+            Email(),
+            Length(
+                max=255,
+                message="Email must be 255 characters or fewer."
+            ),
         ]
     )
 
@@ -132,10 +140,10 @@ class IncomeSourceForm(Form):
         "Amount",
         places=3,
         validators=[
-            DataRequired(),
+            InputRequired(),
             NumberRange(
-                min=0.001,
-                max=999999999.999,
+                min=Decimal("0.001"),
+                max=Decimal("999999999.999"),
                 message="Enter a valid amount."
             )
         ]
@@ -179,8 +187,8 @@ class OnboardingBalanceForm(FlaskForm):
     validators=[
         InputRequired(),
         NumberRange(
-            min=0,
-            max=999999999.999,
+            min=Decimal("0.000"),
+            max=Decimal("999999999.999"),
             message="Balance must be between 0 and 999,999,999.999."
             )
         ]

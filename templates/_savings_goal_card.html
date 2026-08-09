@@ -23,16 +23,13 @@
         <span>/ {{ "{:,.3f}".format(goal.target_amount) }} {{ currency }}</span>
     </p>
 
-    <div
+    <progress
         class="savings-progress-track{% if item['completed'] %} savings-progress-complete{% endif %}"
-        role="progressbar"
-        aria-valuenow="{{ item['visual_percentage'] }}"
-        aria-valuemin="0"
-        aria-valuemax="100"
+        value="{{ item['visual_percentage'] }}"
+        max="100"
+        aria-label="{{ t('Savings progress') }}"
         aria-valuetext="{{ t('{percentage} percent saved', percentage='{:,.1f}'.format(item['percentage'])) }}"
-    >
-        <span style="width: {{ item['visual_percentage'] }}%;"></span>
-    </div>
+    >{{ item['visual_percentage'] }}%</progress>
 
     <div class="savings-goal-metrics">
         <strong><span class="money-value">{{ "{:,.1f}".format(item["percentage"]) }}%</span> {{ t('saved') }}</strong>
@@ -76,7 +73,9 @@
             method="post"
             action="{{ url_for('savings.delete_goal', goal_id=goal.id) }}"
         >
-            {{ delete_form.csrf_token(id="delete-savings-csrf-" ~ goal.id) }}
+            {% if delete_form.csrf_token is defined %}
+                {{ delete_form.csrf_token(id="delete-savings-csrf-" ~ goal.id) }}
+            {% endif %}
             <button
                 type="submit"
                 class="savings-delete-button"

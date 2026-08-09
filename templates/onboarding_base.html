@@ -17,9 +17,7 @@
             <span>{{ t('Step {step} of 5', step=onboarding_step) }}</span>
             <span>{% block step_name %}{% endblock %}</span>
         </div>
-        <div class="onboarding-progress" role="progressbar" aria-label="{{ t('Onboarding progress') }}" aria-valuemin="1" aria-valuemax="5" aria-valuenow="{{ onboarding_step }}">
-            <span style="--step: {{ onboarding_step }}"></span>
-        </div>
+        <progress class="onboarding-progress" value="{{ onboarding_step }}" max="5" aria-label="{{ t('Onboarding progress') }}">{{ onboarding_step }} / 5</progress>
 
         <section class="onboarding-content" aria-labelledby="onboarding-title">
             <header class="onboarding-heading">

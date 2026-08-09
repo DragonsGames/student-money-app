@@ -54,7 +54,9 @@ layout; reviewed and adapted by the project author. -->
                     {{ t('Profile & settings') }}
                 </a>
                 <form method="post" action="{{ url_for('auth.logout') }}">
-                    {{ logout_form.csrf_token(id="desktop-logout-csrf") }}
+                    {% if logout_form.csrf_token is defined %}
+                        {{ logout_form.csrf_token(id="desktop-logout-csrf") }}
+                    {% endif %}
                     <button class="account-link danger-quiet" type="submit">{{ t('Log out') }}</button>
                 </form>
             </div>
@@ -137,7 +139,9 @@ layout; reviewed and adapted by the project author. -->
                 <span>{{ current_user.email }}</span>
             </div>
             <form method="post" action="{{ url_for('auth.logout') }}">
-                {{ logout_form.csrf_token(id="mobile-logout-csrf") }}
+                {% if logout_form.csrf_token is defined %}
+                    {{ logout_form.csrf_token(id="mobile-logout-csrf") }}
+                {% endif %}
                 <button class="button-quiet danger-quiet" type="submit">{{ t('Log out') }}</button>
             </form>
         </div>

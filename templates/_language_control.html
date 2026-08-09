@@ -1,5 +1,7 @@
 <form class="language-control" method="post" action="{{ url_for('public.set_language') }}">
-    {{ language_form.csrf_token(id="language-preference-csrf") }}
+    {% if language_form.csrf_token is defined %}
+        {{ language_form.csrf_token(id="language-preference-csrf") }}
+    {% endif %}
     <input type="hidden" name="next" value="{{ request.full_path }}">
     <label class="visually-hidden" for="language-control-{{ language_form.language.id }}">
         {{ t('Language') }}

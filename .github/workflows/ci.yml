@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: student_money_test
+          MYSQL_USER: student_test
+          MYSQL_PASSWORD: test-password
+          MYSQL_ROOT_PASSWORD: test-root-password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptest-root-password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      SECRET_KEY: ci-only-secret-key
+      DB_HOST: 127.0.0.1
+      DB_USER: student_test
+      DB_PASSWORD: test-password
+      DB_NAME: student_money_test
+      COOKIE_SECURE: "false"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Check dependency consistency
+        run: python -m pip check
+
+      - name: Compile Python
+        run: python -m compileall -q .
+
+      - name: Lint Python
+        run: ruff check .
+
+      - name: Apply migrations to MySQL
+        run: flask --app app db upgrade
+
+      - name: Run tests
+        run: pytest --cov=app --cov=forms --cov=localization --cov=models --cov=routes --cov=services --cov-report=term-missing
