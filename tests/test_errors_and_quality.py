@@ -58,7 +58,7 @@ def test_only_validated_color_features_keep_jinja_inline_styles():
             if "style=" in line and "{{" in line:
                 matches.append((template.name, line_number))
 
-    assert matches == [
+    assert sorted(matches) == [
         ("_category_card.html", 3),
         ("_color_picker.html", 15),
     ]
