@@ -38,6 +38,7 @@ def create_app():
     from routes.budgets import budgets_bp
     from routes.categories import categories_bp
     from routes.dashboard import dashboard_bp
+    from routes.history import history_bp
     from routes.onboarding import onboarding_bp
     from routes.public import public_bp
     from routes.savings import savings_bp
@@ -47,6 +48,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(onboarding_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(history_bp)
     app.register_blueprint(application_bp)
     app.register_blueprint(transactions_bp)
     app.register_blueprint(categories_bp)

@@ -428,3 +428,58 @@ class TransactionForm(FlaskForm):
 
 class DeleteTransactionForm(FlaskForm):
     submit = SubmitField("Delete transaction")
+
+
+# AI assistance: OpenAI Codex helped draft this GET-only history filter form
+# and date-range validation; reviewed and adapted by the project author.
+class HistoryFilterForm(Form):
+    transaction_type = SelectField(
+        "Type",
+        choices=[
+            ("all", "All transactions"),
+            ("income", "Income"),
+            ("expense", "Expenses"),
+        ],
+        default="all",
+        validators=[DataRequired()]
+    )
+
+    category_id = SelectField(
+        "Category",
+        coerce=int,
+        default=0
+    )
+
+    start_date = DateField(
+        "From",
+        validators=[Optional()]
+    )
+
+    end_date = DateField(
+        "To",
+        validators=[Optional()]
+    )
+
+    sort = SelectField(
+        "Sort by",
+        choices=[
+            ("newest", "Newest first"),
+            ("oldest", "Oldest first"),
+            ("amount_high", "Highest amount"),
+            ("amount_low", "Lowest amount"),
+        ],
+        default="newest",
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField("Apply filters")
+
+    def validate_end_date(self, field):
+        if (
+            self.start_date.data
+            and field.data
+            and self.start_date.data > field.data
+        ):
+            raise ValidationError(
+                "The start date must be on or before the end date."
+            )

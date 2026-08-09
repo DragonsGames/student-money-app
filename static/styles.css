@@ -2903,3 +2903,157 @@ body {
         align-items: stretch;
     }
 }
+
+/* Transaction history
+   AI assistance: OpenAI Codex helped refine the responsive History filtering
+   layout; reviewed and adapted by the project author. */
+
+.history-filter-panel,
+.history-results-panel {
+    margin-top: 1.25rem;
+}
+
+.history-filter-panel {
+    padding: clamp(1.2rem, 3vw, 1.75rem);
+    border: 1px solid rgba(23, 23, 28, 0.07);
+    border-radius: 1.35rem;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 16px 44px rgba(40, 32, 77, 0.055);
+}
+
+.history-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.history-section-heading h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 750;
+}
+
+.history-clear-link {
+    color: #6247cd;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.history-clear-link:hover,
+.history-clear-link:focus-visible {
+    color: #5034bc;
+    text-decoration: underline;
+}
+
+.history-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) minmax(9rem, 0.8fr);
+    align-items: end;
+    gap: 0 0.8rem;
+}
+
+.history-filter-actions {
+    padding-bottom: 1rem;
+}
+
+.history-filter-actions .btn {
+    width: 100%;
+}
+
+.history-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.history-summary-card {
+    display: flex;
+    min-width: 0;
+    min-height: 9.5rem;
+    flex-direction: column;
+    padding: 1.2rem;
+    border: 1px solid rgba(23, 23, 28, 0.07);
+    border-radius: 1.2rem;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 14px 38px rgba(40, 32, 77, 0.05);
+}
+
+.history-summary-card p {
+    margin: 0 0 0.7rem;
+    color: #7b7883;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.history-summary-card strong {
+    overflow-wrap: anywhere;
+    font-size: clamp(1.15rem, 3vw, 1.45rem);
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+}
+
+.history-summary-card strong span {
+    font-size: 0.55em;
+    letter-spacing: 0.04em;
+}
+
+.history-summary-card small {
+    margin-top: auto;
+    padding-top: 1rem;
+    color: #98959f;
+    font-size: 0.72rem;
+    line-height: 1.45;
+}
+
+.history-summary-primary {
+    border-color: transparent;
+    color: white;
+    background: linear-gradient(135deg, #6e50ed, #8c73f4);
+}
+
+.history-summary-primary p,
+.history-summary-primary small {
+    color: rgba(255, 255, 255, 0.73);
+}
+
+@media (max-width: 1199.98px) {
+    .history-filter-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .history-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .history-filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .history-filter-panel {
+        padding: 1rem;
+        border-radius: 1.1rem;
+    }
+
+    .history-section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .history-filter-grid,
+    .history-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .history-summary-card {
+        min-height: 8.5rem;
+    }
+}
