@@ -6,7 +6,7 @@ from sqlalchemy import exists
 
 from extensions import db
 from forms import CategoryForm, DeleteCategoryForm, LogoutForm
-from models import Category, Transaction
+from models import Budget, Category, Transaction
 from routes.guards import onboarding_complete_required
 
 
@@ -36,9 +36,18 @@ def _duplicate_category(name, category_type, excluded_id=None):
     return db.session.execute(statement).scalar_one_or_none()
 
 
-def _category_is_used(category_id):
+def _category_has_transactions(category_id):
     statement = db.select(
         exists().where(Transaction.category_id == category_id)
+    )
+    return db.session.execute(statement).scalar_one()
+
+
+# AI assistance: OpenAI Codex helped extend category protections for budget
+# references and expense-type consistency; reviewed by the project author.
+def _category_has_budget(category_id):
+    statement = db.select(
+        exists().where(Budget.category_id == category_id)
     )
     return db.session.execute(statement).scalar_one()
 
@@ -91,6 +100,12 @@ def categories():
     )
     used_category_ids = set(
         db.session.execute(used_statement).scalars().all()
+    )
+    budgeted_statement = db.select(Budget.category_id).where(
+        Budget.user_id == current_user.id
+    )
+    used_category_ids.update(
+        db.session.execute(budgeted_statement).scalars().all()
     )
 
     return render_template(
@@ -165,8 +180,21 @@ def edit_category(category_id):
 
     if form.validate_on_submit():
         name = form.name.data.strip()
+        changes_budgeted_category_to_income = (
+            category.category_type == "expense"
+            and form.category_type.data == "income"
+            and _category_has_budget(category.id)
+        )
 
-        if _duplicate_category(
+        if changes_budgeted_category_to_income:
+            form.category_type.errors.append(
+                "Remove this category's budget before changing it to income."
+            )
+            flash(
+                "A category with a budget must remain an expense category.",
+                "danger"
+            )
+        elif _duplicate_category(
             name,
             form.category_type.data,
             excluded_id=category.id
@@ -205,10 +233,28 @@ def delete_category(category_id):
     if category is None:
         abort(404)
 
-    if _category_is_used(category.id):
+    has_transactions = _category_has_transactions(category.id)
+    has_budget = _category_has_budget(category.id)
+
+    if has_transactions and has_budget:
         flash(
-            "This category cannot be deleted because it is used by "
-            "existing transactions.",
+            "This category cannot be deleted because it is used by existing "
+            "transactions and a budget.",
+            "danger"
+        )
+        return redirect(url_for("categories.categories"))
+
+    if has_transactions:
+        flash(
+            "This category cannot be deleted because it is used by existing "
+            "transactions.",
+            "danger"
+        )
+        return redirect(url_for("categories.categories"))
+
+    if has_budget:
+        flash(
+            "This category cannot be deleted because it has a budget.",
             "danger"
         )
         return redirect(url_for("categories.categories"))

@@ -1,0 +1,64 @@
+{% set budget = item.budget %}
+
+<article class="budget-card{% if item.overspent %} budget-card-overspent{% endif %}">
+    <div class="budget-card-heading">
+        <div class="budget-category-identity">
+            <span class="budget-category-icon" aria-hidden="true">
+                {{ budget.category.icon or "•" }}
+            </span>
+            <div>
+                <h3>{{ budget.category.name }}</h3>
+                <span>{{ budget_summary.period|capitalize }} budget</span>
+            </div>
+        </div>
+
+        {% if item.overspent %}
+            <span class="budget-status-badge">Over budget</span>
+        {% endif %}
+    </div>
+
+    <p class="budget-amount-line">
+        <strong>{{ "{:,.3f}".format(item.spent) }}</strong>
+        <span>/ {{ "{:,.3f}".format(budget.amount) }} {{ currency }}</span>
+    </p>
+
+    <div
+        class="budget-progress-track{% if item.overspent %} budget-progress-overspent{% endif %}"
+        role="progressbar"
+        aria-valuenow="{{ item.visual_percentage }}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuetext="{{ '{:,.1f}'.format(item.percentage) }} percent used"
+    >
+        <span style="width: {{ item.visual_percentage }}%;"></span>
+    </div>
+
+    <div class="budget-card-metrics">
+        <strong>{{ "{:,.1f}".format(item.percentage) }}% used</strong>
+        {% if item.overspent %}
+            <span>
+                {{ "{:,.3f}".format(-item.remaining) }} {{ currency }} over budget
+            </span>
+        {% else %}
+            <span>
+                {{ "{:,.3f}".format(item.remaining) }} {{ currency }} remaining
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="budget-card-actions">
+        <a
+            class="budget-edit-link"
+            href="{{ url_for('budgets.edit_budget', budget_id=budget.id) }}"
+        >
+            Edit
+        </a>
+        <form
+            method="post"
+            action="{{ url_for('budgets.delete_budget', budget_id=budget.id) }}"
+        >
+            {{ delete_form.csrf_token(id="delete-budget-csrf-" ~ budget.id) }}
+            <button type="submit" class="budget-delete-button">Delete</button>
+        </form>
+    </div>
+</article>

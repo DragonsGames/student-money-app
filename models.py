@@ -9,6 +9,7 @@ from sqlalchemy import (
     ForeignKey,
     Numeric,
     String,
+    UniqueConstraint,
     func,
     text,
 )
@@ -31,6 +32,10 @@ class User(UserMixin, db.Model):
     cascade="all, delete-orphan"
     )
     transactions: Mapped[list["Transaction"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+    budgets: Mapped[list["Budget"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan"
     )
@@ -193,6 +198,11 @@ class Category(db.Model):
         back_populates="category"
     )
 
+    budget: Mapped["Budget"] = relationship(
+        back_populates="category",
+        uselist=False
+    )
+
 
 # AI assistance: OpenAI Codex assisted with drafting the Transaction model
 # structure; reviewed and adapted by the project author.
@@ -251,6 +261,52 @@ class Transaction(db.Model):
 
     category: Mapped["Category"] = relationship(
         back_populates="transactions"
+    )
+
+
+# AI assistance: OpenAI Codex assisted with drafting the Budget model and its
+# integrity constraints; reviewed and adapted by the project author.
+class Budget(db.Model):
+    __tablename__ = "budgets"
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "category_id",
+            name="uq_budgets_user_category"
+        ),
+        CheckConstraint(
+            "amount > 0",
+            name="ck_budgets_amount_positive"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False
+    )
+
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("categories.id"),
+        nullable=False
+    )
+
+    amount: Mapped[Decimal] = mapped_column(
+        Numeric(12, 3),
+        nullable=False
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now()
+    )
+
+    user: Mapped["User"] = relationship(
+        back_populates="budgets"
+    )
+
+    category: Mapped["Category"] = relationship(
+        back_populates="budget"
     )
 
 

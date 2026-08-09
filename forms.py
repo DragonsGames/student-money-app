@@ -260,6 +260,51 @@ class DeleteCategoryForm(FlaskForm):
     submit = SubmitField("Delete category")
 
 
+# AI assistance: OpenAI Codex helped draft the budget and period forms;
+# reviewed and adapted by the project author.
+class BudgetForm(FlaskForm):
+    category_id = SelectField(
+        "Expense category",
+        coerce=int,
+        validators=[
+            InputRequired(message="Choose an expense category."),
+            NumberRange(min=1, message="Choose an expense category.")
+        ]
+    )
+
+    amount = DecimalField(
+        "Budget amount",
+        places=3,
+        validators=[
+            InputRequired(),
+            NumberRange(
+                min=Decimal("0.001"),
+                max=Decimal("999999999.999"),
+                message="Enter an amount between 0.001 and 999,999,999.999."
+            )
+        ]
+    )
+
+    submit = SubmitField("Save budget")
+
+
+class BudgetPeriodForm(FlaskForm):
+    budget_period = SelectField(
+        "Budget period",
+        choices=[
+            ("weekly", "Weekly"),
+            ("monthly", "Monthly"),
+        ],
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField("Update period")
+
+
+class DeleteBudgetForm(FlaskForm):
+    submit = SubmitField("Delete budget")
+
+
 class LogoutForm(FlaskForm):
     submit = SubmitField("Log out")
 

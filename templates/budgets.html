@@ -1,0 +1,105 @@
+{% extends "app_base.html" %}
+{% set active_page = "budgets" %}
+
+{% block title %}Budgets | Student Money{% endblock %}
+{% block app_page_title %}Budgets{% endblock %}
+{% block app_page_subtitle %}
+Plan spending limits for your expense categories using real transaction activity.
+{% endblock %}
+
+{% block app_header_actions %}
+<a class="btn app-primary-button" href="{{ url_for('budgets.add_budget') }}">
+    <span aria-hidden="true">+</span> Add budget
+</a>
+{% endblock %}
+
+{% block app_content %}
+
+<!-- AI assistance: OpenAI Codex helped draft this budget-management UI;
+reviewed and adapted by the project author. -->
+<section class="budget-period-panel">
+    <div>
+        <p class="dashboard-eyebrow">Current period</p>
+        <h2>{{ budget_summary.period|capitalize }} budgets</h2>
+        <p>
+            Spending from {{ budget_summary.period_start.strftime("%b %d, %Y") }}
+            through today.
+        </p>
+    </div>
+
+    <form
+        class="budget-period-form"
+        method="post"
+        action="{{ url_for('budgets.update_period') }}"
+    >
+        {{ period_form.hidden_tag() }}
+        {{ period_form.budget_period.label(class="visually-hidden") }}
+        {{ period_form.budget_period(class="form-select onboarding-input") }}
+        {{ period_form.submit(class="btn app-secondary-button") }}
+    </form>
+</section>
+
+<section class="budget-summary-grid" aria-label="Budget summary">
+    <article class="budget-summary-card budget-summary-primary">
+        <p>Total budgeted</p>
+        <strong>
+            {{ "{:,.3f}".format(budget_summary.total_budgeted) }}
+            <span>{{ currency }}</span>
+        </strong>
+        <small>Across budgeted expense categories</small>
+    </article>
+
+    <article class="budget-summary-card">
+        <p>Spent against budgets</p>
+        <strong>
+            {{ "{:,.3f}".format(budget_summary.total_spent) }}
+            <span>{{ currency }}</span>
+        </strong>
+        <small>Unbudgeted expenses are not included here</small>
+    </article>
+
+    <article class="budget-summary-card{% if budget_summary.overspent %} budget-summary-over{% endif %}">
+        <p>{% if budget_summary.overspent %}Over budget{% else %}Remaining{% endif %}</p>
+        <strong>
+            {% if budget_summary.overspent %}
+                {{ "{:,.3f}".format(-budget_summary.total_remaining) }}
+            {% else %}
+                {{ "{:,.3f}".format(budget_summary.total_remaining) }}
+            {% endif %}
+            <span>{{ currency }}</span>
+        </strong>
+        <small>{{ "{:,.1f}".format(budget_summary.total_percentage) }}% used</small>
+    </article>
+</section>
+
+<section class="budget-list-panel" aria-labelledby="category-budgets-title">
+    <div class="budget-list-heading">
+        <div>
+            <p class="dashboard-eyebrow">Category limits</p>
+            <h2 id="category-budgets-title">Your budgets</h2>
+        </div>
+        <span>{{ budget_summary["items"]|length }} total</span>
+    </div>
+
+    {% if budget_summary["items"] %}
+        <div class="budget-grid">
+            {% for item in budget_summary["items"] %}
+                {% include "_budget_card.html" %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state budget-empty-state">
+            <span class="empty-state-symbol" aria-hidden="true">▤</span>
+            <h3>No budget set yet</h3>
+            <p>
+                Add a spending limit for an expense category to begin tracking
+                this {{ budget_summary.period }} period.
+            </p>
+            <a class="btn app-primary-button" href="{{ url_for('budgets.add_budget') }}">
+                Create a budget
+            </a>
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

@@ -6,6 +6,7 @@ from extensions import db
 from forms import LogoutForm
 from models import Transaction
 from routes.guards import onboarding_complete_required
+from services.budgets import get_budget_summary
 from services.finance import ZERO, get_financial_summary
 
 
@@ -49,6 +50,10 @@ def dashboard():
         financial_summary=get_financial_summary(
             current_user.id,
             starting_balance
+        ),
+        budget_summary=get_budget_summary(
+            current_user.id,
+            settings.budget_period
         ),
         recent_transactions=recent_transactions,
         logout_form=LogoutForm(),

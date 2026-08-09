@@ -81,8 +81,30 @@ reviewed and adapted by the project author. -->
         <article class="summary-card">
             <span class="summary-symbol summary-symbol-budget" aria-hidden="true">▤</span>
             <p>Budget</p>
-            <strong>Not set up yet</strong>
-            <small>Budget tools are coming later</small>
+            <!-- AI assistance: OpenAI Codex helped connect this dashboard card
+            to the real current-period budget summary; reviewed by the project author. -->
+            {% if budget_summary["items"] %}
+                <strong>
+                    {{ "{:,.3f}".format(budget_summary.total_spent) }} /
+                    {{ "{:,.3f}".format(budget_summary.total_budgeted) }}
+                    {{ currency }} spent
+                </strong>
+                <small>
+                    {{ "{:,.1f}".format(budget_summary.total_percentage) }}% used ·
+                    {% if budget_summary.overspent %}
+                        {{ "{:,.3f}".format(-budget_summary.total_remaining) }} over budget
+                    {% else %}
+                        {{ "{:,.3f}".format(budget_summary.total_remaining) }} remaining
+                    {% endif %}
+                </small>
+            {% else %}
+                <strong>No budget set yet</strong>
+                <small>
+                    <a class="summary-card-link" href="{{ url_for('budgets.add_budget') }}">
+                        Create a budget
+                    </a>
+                </small>
+            {% endif %}
         </article>
 
         <article class="summary-card">
