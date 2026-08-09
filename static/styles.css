@@ -1257,6 +1257,86 @@ body {
     line-height: 1.55;
 }
 
+/* Safe to spend
+   AI assistance: OpenAI Codex helped refine this responsive Safe-to-Spend
+   state and breakdown; reviewed and adapted by the project author. */
+
+.safe-to-spend-card {
+    gap: 1rem;
+}
+
+.safe-to-spend-warning {
+    background:
+        radial-gradient(circle at 100% 0, #fff1d8, transparent 65%),
+        rgba(255, 255, 255, 0.96);
+}
+
+.dashboard-insight-card .safe-to-spend-value {
+    margin-top: 0.2rem;
+    color: #382d62;
+    font-size: clamp(1.65rem, 4vw, 2.25rem);
+    letter-spacing: -0.045em;
+    line-height: 1.1;
+}
+
+.safe-to-spend-value span {
+    font-size: 0.42em;
+    letter-spacing: 0.04em;
+}
+
+.dashboard-insight-card .safe-to-spend-helper {
+    margin: 0.55rem 0 0;
+    font-size: 0.76rem;
+    line-height: 1.45;
+}
+
+.safe-to-spend-breakdown {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+}
+
+.safe-to-spend-breakdown > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 0.35rem;
+    border-top: 1px solid rgba(68, 55, 111, 0.08);
+}
+
+.safe-to-spend-breakdown dt,
+.safe-to-spend-breakdown dd {
+    margin: 0;
+    font-size: 0.7rem;
+}
+
+.safe-to-spend-breakdown dt {
+    color: #85818d;
+    font-weight: 600;
+}
+
+.safe-to-spend-breakdown dd {
+    color: #514c5b;
+    font-weight: 750;
+    text-align: right;
+}
+
+.safe-to-spend-label {
+    align-self: flex-start;
+    padding: 0.3rem 0.55rem;
+    border-radius: 999px;
+    color: #6147cb;
+    background: var(--soft-purple);
+    font-size: 0.68rem;
+    font-weight: 750;
+}
+
+.safe-to-spend-warning .safe-to-spend-label {
+    color: #8b612b;
+    background: #fff1d8;
+}
+
 .dashboard-coming-soon,
 .app-placeholder-status {
     align-self: flex-start;

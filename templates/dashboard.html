@@ -37,17 +37,55 @@ reviewed and adapted by the project author. -->
         </p>
     </section>
 
-    <section class="dashboard-insight-card">
-        <span class="dashboard-insight-symbol" aria-hidden="true">✦</span>
+    <!-- AI assistance: OpenAI Codex helped draft this Safe-to-Spend Dashboard
+    breakdown; reviewed and adapted by the project author. -->
+    <section class="dashboard-insight-card safe-to-spend-card{% if safe_to_spend_summary.is_overcommitted %} safe-to-spend-warning{% endif %}">
         <div>
+            <span class="dashboard-insight-symbol" aria-hidden="true">✦</span>
             <p class="dashboard-eyebrow">Safe to spend</p>
-            <h2>Your insight will appear here</h2>
-            <p>
-                We'll show a useful spending insight after transaction and
-                budget data are available.
-            </p>
+            <h2 class="safe-to-spend-value">
+                {{ "{:,.3f}".format(safe_to_spend_summary.safe_to_spend) }}
+                <span>{{ currency }}</span>
+            </h2>
+            {% if safe_to_spend_summary.is_overcommitted %}
+                <p class="safe-to-spend-helper">
+                    Your reserved savings and remaining budgets exceed your
+                    available balance by
+                    {{ "{:,.3f}".format(safe_to_spend_summary.shortfall) }}
+                    {{ currency }}.
+                </p>
+            {% else %}
+                <p class="safe-to-spend-helper">
+                    Available after protecting savings and remaining budget amounts.
+                </p>
+            {% endif %}
         </div>
-        <span class="dashboard-coming-soon">Coming later</span>
+
+        <dl class="safe-to-spend-breakdown">
+            <div>
+                <dt>Current balance</dt>
+                <dd>
+                    {{ "{:,.3f}".format(safe_to_spend_summary.current_balance) }}
+                    {{ currency }}
+                </dd>
+            </div>
+            <div>
+                <dt>Savings reserved</dt>
+                <dd>
+                    - {{ "{:,.3f}".format(safe_to_spend_summary.savings_reserved) }}
+                    {{ currency }}
+                </dd>
+            </div>
+            <div>
+                <dt>Budget reserved</dt>
+                <dd>
+                    - {{ "{:,.3f}".format(safe_to_spend_summary.budget_reserved) }}
+                    {{ currency }}
+                </dd>
+            </div>
+        </dl>
+
+        <span class="safe-to-spend-label">Planning estimate</span>
     </section>
 </div>
 

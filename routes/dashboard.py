@@ -8,6 +8,7 @@ from models import Transaction
 from routes.guards import onboarding_complete_required
 from services.budgets import get_budget_summary
 from services.finance import ZERO, get_financial_summary
+from services.safe_to_spend import get_safe_to_spend_summary
 from services.savings import get_savings_summary
 
 
@@ -42,21 +43,29 @@ def dashboard():
     recent_transactions = db.session.execute(
         recent_statement
     ).scalars().all()
+    financial_summary = get_financial_summary(
+        current_user.id,
+        starting_balance
+    )
+    budget_summary = get_budget_summary(
+        current_user.id,
+        settings.budget_period
+    )
+    savings_summary = get_savings_summary(current_user.id)
 
     return render_template(
         "dashboard.html",
         display_name=display_name,
         settings=settings,
         currency=currency,
-        financial_summary=get_financial_summary(
-            current_user.id,
-            starting_balance
+        financial_summary=financial_summary,
+        budget_summary=budget_summary,
+        savings_summary=savings_summary,
+        safe_to_spend_summary=get_safe_to_spend_summary(
+            financial_summary,
+            budget_summary,
+            savings_summary,
         ),
-        budget_summary=get_budget_summary(
-            current_user.id,
-            settings.budget_period
-        ),
-        savings_summary=get_savings_summary(current_user.id),
         recent_transactions=recent_transactions,
         logout_form=LogoutForm(),
     )
