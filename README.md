@@ -1,51 +1,102 @@
 # ILI pika
-#### Video Demo: <https://youtu.be/y8OhW_vO9to>
 
-#### Description: 
+> A student-focused personal finance web application built with Flask and MySQL.
 
-ILI pika is my CS50x final project. It is a student-focused personal finance web application built with Python, Flask, MySQL, SQLAlchemy, Jinja, HTML, CSS, and JavaScript.
+![CI](https://github.com/DragonsGames/student-money-app/actions/workflows/ci.yml/badge.svg)
 
-I wanted to make something that I could realistically imagine using as a student. Student money is usually irregular: weekly allowance, monthly allowance, money from family, part-time work, or one-time payments. At the same time, students may want to control spending, save for something, and still know how much money is really safe to use.
+ILI pika is a personal money-management web app designed for students who want a simple way to understand where their money goes, plan spending, build savings, and know how much is genuinely safe to spend.
 
-At first I expected this project to be much smaller. I thought I would build a local Flask app with transactions and a dashboard. While working on it, I became more ambitious and added a real MySQL database, migrations, authentication, onboarding, budgets, savings goals, categories, filtering, settings, three languages, RTL support for Arabic, themes, automated tests, and GitHub Actions CI. I probably got a little carried away compared with a simple MVP, but that also made this project a much bigger learning experience for me.
-
-The application is called **ILI pika**. The visual identity is inspired by the pika animal. I wanted it to feel friendly and student-focused without looking like a toy or a generic banking dashboard.
+It began as my CS50 final project and grew into a complete full-stack application with authentication, onboarding, transactions, budgets, savings goals, multilingual support, RTL layouts, dark mode, automated testing, and CI.
 
 ---
 
-## Main features
+## Why I built it
 
-A user can register with an email and password. Passwords are hashed and authentication is handled with Flask-Login.
+Student finances are often irregular. A student may receive a weekly or monthly allowance, occasional income, money from family, part-time earnings, or one-time payments.
 
-After registration, the user goes through onboarding. The onboarding flow asks for basic profile information, goals, income information, starting balance, and starter categories. I added onboarding because I did not want a new user to arrive at a completely empty dashboard.
+At the same time, they may want to track daily spending, stay within category budgets, save for something specific, and avoid spending money they already mentally reserved.
 
-After onboarding, the main application includes:
+ILI pika is built around that reality.
 
-- Dashboard
-- Transactions
-- Budgets
-- Savings
-- Categories
-- History
-- Settings
+Instead of treating every planned source of money as already available, the app separates actual transactions, income-source planning, budgets, savings, and current balance.
 
-Transactions can be income or expenses. Each transaction belongs to the current user and a category. Users can create, edit, and delete their own transactions. Ownership is checked on the server so changing an ID in the URL does not allow access to another user's data.
+---
 
-Categories can have a custom name, type, icon, and color. I added rules so that categories cannot be changed or deleted in ways that would break existing transaction or budget data.
+## Core features
 
-Budgets are category-based. The user chooses weekly or monthly budgeting in settings. The app calculates spending in the current period, remaining budget, and whether a budget is overspent.
+### Authentication and onboarding
 
-Savings goals have a target amount, saved amount, and optional target date. The user can add or withdraw savings progress.
+- Account registration and login
+- Password hashing with Werkzeug
+- Remember-me support
+- POST-only logout with CSRF protection
+- Five-step onboarding flow
+- Redirects incomplete users back to onboarding
+- Already-authenticated users skip the public landing page and go directly to the appropriate app page
 
-One important design decision is that savings progress does **not** automatically reduce the transaction balance. The money is still part of the user's balance, but it is treated as reserved in Safe-to-Spend.
+### Transactions
 
-Another important decision is that planned income sources do **not** count as money the user currently has. An `IncomeSource` can describe expected or recurring income, but current balance changes only when real income transactions are recorded.
+- Add income and expenses
+- Edit and delete transactions
+- Custom descriptions and transaction dates
+- User-owned categories
+- Future transaction dates are rejected
+- Category type must match transaction type
+- User ownership is enforced server-side
+
+### Categories
+
+- Separate income and expense categories
+- Custom category names
+- Emoji/icon picker
+- Native color picker plus curated swatches
+- Safe `#RRGGBB` validation
+- Used categories are protected from unsafe deletion
+- Budgeted expense categories cannot be converted to income categories
+
+### Budgets
+
+- Category-level budgets
+- Weekly or monthly budget periods
+- Current-period spending
+- Remaining budget and overspending state
+- Per-category progress
+- Global budget summary
+- Unbudgeted expenses stay separate from budget usage
+
+### Savings goals
+
+- Create, edit, and delete savings goals
+- Target amount and optional target date
+- Add or withdraw saved money
+- Completion and overfunding support
+- Savings progress does not create transactions or change current balance
+
+### History
+
+- Filter by transaction type, category, and date range
+- Sort by newest, oldest, highest amount, or lowest amount
+- Filtered count, income, expense, and net summaries
+- User-scoped results only
+- Separate empty states for no history and no matching results
+
+### Dashboard
+
+The dashboard brings together:
+
+- Current balance
+- Safe-to-Spend
+- Budget progress
+- Savings progress
+- Recent transactions
+- Quick actions
+- Contextual next-step guidance
 
 ---
 
 ## Safe-to-Spend
 
-The feature I consider most specific to this project is **Safe-to-Spend**.
+One of the main custom features in ILI pika is the **Safe-to-Spend** calculation.
 
 Current balance is:
 
@@ -55,41 +106,237 @@ starting balance
 - actual expense transactions
 ```
 
-Safe-to-Spend then protects money that is already reserved:
+Safe-to-Spend then protects money already reserved for savings and remaining budgets:
 
 ```text
-Safe-to-Spend
+raw safe to spend
 =
 current balance
 - savings reserved
-- remaining budget reserves
+- budget reserved
 ```
 
-The budget reserve is calculated per budget.
+Where:
+
+```text
+savings reserved
+=
+sum of SavingsGoal.saved_amount
+```
+
+and:
+
+```text
+budget reserved
+=
+sum of max(budget amount - current-period spending, 0)
+for every budget
+```
+
+The per-budget clamp matters.
 
 Example:
 
 ```text
-Food budget: 100
-Food spent: 150
+Food budget:       100
+Food spent:        150
+Food reserve:        0
 
-Transport budget: 100
-Transport spent: 0
+Transport budget:  100
+Transport spent:     0
+Transport reserve: 100
 ```
 
-Food has no remaining reserve because it is already overspent, but Transport still has 100 reserved. The total reserve is therefore 100, not 50.
+The total budget reserve is `100`, not `50`.
 
-I chose this behavior because overspending one category should not free money that was still reserved for another category.
+Overspending one category never frees money reserved for another category.
 
-If the raw Safe-to-Spend result becomes negative, the app displays 0 as the safe amount while still tracking the shortfall.
+If the raw result is negative, the displayed Safe-to-Spend amount is `0`, while the app keeps the real shortfall so the user can understand that their planned commitments exceed their current balance.
+
+Expected or scheduled income sources are deliberately excluded until money is recorded as an actual transaction.
+
+---
+
+## Internationalization
+
+ILI pika currently supports:
+
+- English
+- French
+- Arabic
+
+Arabic includes RTL layout support.
+
+The localization system covers navigation, forms, validation messages, flash messages, financial summaries, empty states, settings, onboarding, landing/auth pages, and accessibility labels.
+
+Stable internal values such as `income`, `expense`, `weekly`, and `monthly` remain language-independent in the database.
+
+---
+
+## Appearance
+
+The interface supports:
+
+- System theme
+- Light mode
+- Dark mode
+
+Authenticated users have their preference stored in `UserSettings`.
+
+Anonymous visitors can still use theme and language preferences on public pages.
+
+The visual identity is warm, compact, student-friendly, and inspired by the pika animal without becoming cartoon-like.
+
+---
+
+## Security
+
+Current protections include:
+
+- Password hashing
+- Flask-WTF CSRF protection
+- POST-only destructive operations
+- Per-user ownership checks
+- Foreign user resources return `404` where appropriate
+- Category ownership/type validation
+- Open-redirect protection
+- Safe category color validation
+- Jinja autoescaping
+- `HttpOnly` cookies
+- `SameSite=Lax`
+- Environment-controlled secure cookies for HTTPS deployment
+- Conservative cache headers for authenticated HTML
+- Security response headers including:
+  - `X-Content-Type-Options`
+  - `X-Frame-Options`
+  - `Referrer-Policy`
+  - `Permissions-Policy`
+- No hardcoded production debug mode
+
+No custom cryptography is used.
+
+---
+
+## Testing
+
+The project has an automated test suite built with `pytest`.
+
+Current result:
+
+```text
+112 tests passed
+94% overall coverage
+```
+
+The core financial services currently have 100% coverage:
+
+- `services/finance.py`
+- `services/budgets.py`
+- `services/savings.py`
+- `services/safe_to_spend.py`
+
+The tests cover:
+
+- registration and login
+- logout
+- onboarding
+- redirects
+- transactions
+- categories
+- budgets
+- savings
+- history filters
+- settings
+- localization and RTL
+- Safe-to-Spend
+- Decimal money boundaries
+- CSRF
+- HTTP method safety
+- ownership/IDOR attempts
+- open redirects
+- error pages
+- migration behavior
+- a full user workflow
+
+Tests use isolated temporary databases and never operate on the normal development database.
+
+Run the suite:
+
+```bash
+python -m pytest
+```
+
+Run with coverage:
+
+```bash
+python -m pytest --cov=app --cov=forms --cov=localization --cov=models --cov=routes --cov=services --cov-report=term-missing
+```
+
+---
+
+## Continuous Integration
+
+GitHub Actions runs CI on pushes and pull requests.
+
+The workflow:
+
+1. Checks out the repository
+2. Sets up Python 3.11
+3. Starts an isolated MySQL 8.4 service
+4. Installs runtime and development dependencies
+5. Runs `pip check`
+6. Compiles the Python source
+7. Runs Ruff
+8. Migrates an empty MySQL database to the current Alembic head
+9. Runs the full pytest suite with coverage
+
+This catches missing dependencies, migration problems, syntax issues, Linux/Windows differences, and application regressions.
+
+---
+
+## Technology stack
+
+### Backend
+
+- Python 3.11
+- Flask
+- Flask-Login
+- Flask-WTF
+- WTForms
+- Flask-SQLAlchemy
+- SQLAlchemy
+- Flask-Migrate
+- Alembic
+- Werkzeug
+
+### Database
+
+- MySQL
+- PyMySQL
+
+### Frontend
+
+- Jinja
+- HTML
+- CSS
+- Bootstrap CSS
+- Vanilla JavaScript
+- Local SVG assets
+
+### Development and quality
+
+- pytest
+- pytest-cov
+- Ruff
+- GitHub Actions
 
 ---
 
 ## Money precision
 
-I learned that normal floating-point numbers can create precision problems with money.
+Money is not stored or calculated using binary floating-point values.
 
-For that reason, the project uses Python `Decimal` values and SQL `NUMERIC(12,3)` fields.
+The application uses `Decimal` in Python and `NUMERIC(12,3)` in the database.
 
 The maximum supported monetary value is:
 
@@ -97,431 +344,259 @@ The maximum supported monetary value is:
 999999999.999
 ```
 
-This was one of the areas where the project became more serious than my original plan because I started thinking about edge cases and exact validation instead of only making the normal path work.
+This avoids binary floating-point errors in financial calculations.
 
 ---
 
-## Project files
+## Project structure
 
-### `app.py`
-
-Contains the Flask application factory and main app configuration. It initializes the application, registers blueprints, configures extensions, error handlers, security-related headers, and application behavior.
-
-While working on this project I learned more about Flask application factories and why larger Flask apps should not put everything in one file.
-
-### `extensions.py`
-
-Contains extensions such as SQLAlchemy, Flask-Migrate, and Flask-Login so they can be initialized separately from the Flask app.
-
-### `models.py`
-
-Contains the SQLAlchemy database models.
-
-The main models include:
-
-- `User`
-- `UserSettings`
-- `IncomeSource`
-- `Category`
-- `UserGoal`
-- `Transaction`
-- `Budget`
-- `SavingsGoal`
-
-It defines the database structure and relationships between those objects.
-
-### `forms.py`
-
-Contains Flask-WTF / WTForms forms and validation for authentication, onboarding, transactions, categories, budgets, savings, and settings.
-
-### `localization.py`
-
-Contains the lightweight localization system.
-
-ILI pika supports:
-
-- English
-- French
-- Arabic
-
-Arabic also changes the interface to RTL.
-
-### `routes/`
-
-Contains the Flask blueprints for the different parts of the application.
-
-Important files include:
-
-- `auth.py`
-- `onboarding.py`
-- `dashboard.py`
-- `transactions.py`
-- `categories.py`
-- `budgets.py`
-- `savings.py`
-- `history.py`
-- `settings.py`
-- `public.py`
-- `guards.py`
-
-### `services/`
-
-Contains financial logic separated from the routes:
-
-- `finance.py`
-- `budgets.py`
-- `savings.py`
-- `safe_to_spend.py`
-
-I separated these calculations because I did not want all financial logic mixed directly into route functions. It also made the logic easier to test.
-
-### `templates/`
-
-Contains Jinja templates for the landing page, authentication, onboarding, dashboard, transactions, budgets, savings, categories, history, settings, error pages, and reusable UI components.
-
-### `static/`
-
-Contains the CSS, JavaScript, icons, and ILI pika visual assets.
-
-### `migrations/`
-
-Contains the Alembic / Flask-Migrate migration history.
-
-Before this project, I had not worked deeply with database migrations. I learned how to create a database, configure a MySQL user, apply migrations, check the current revision, check migration heads, and rebuild the schema from an empty database.
-
-### `tests/`
-
-Contains the pytest test suite.
-
-There are currently **112 automated tests** covering authentication, onboarding, transactions, budgets, savings, categories, history, localization, security, financial calculations, migration behavior, and a full user flow.
-
-Current overall coverage is around **94%**.
-
-### `.github/workflows/ci.yml`
-
-Contains the GitHub Actions CI workflow.
-
-It creates a clean Linux environment, starts MySQL 8.4, installs dependencies, runs code checks, applies migrations to an empty database, and runs the test suite.
-
-This taught me an important lesson because my tests passed locally on Windows while CI failed at first. One issue was how pytest imported the app, and another was a Windows/Linux file-ordering difference. Fixing those problems helped me understand why "it works on my machine" is not enough.
-
----
-
-## MySQL and database work
-
-One of the biggest new things I learned was how to work with MySQL in a real project.
-
-I learned how to:
-
-- create a database
-- create a database user
-- configure credentials with environment variables
-- connect Flask and SQLAlchemy to MySQL
-- define relationships
-- use foreign keys and unique constraints
-- use `Numeric` for money
-- use Flask-Migrate and Alembic
-- apply and inspect migrations
-- test migrations on an empty database
-
-I also learned why migrations matter when the structure of an application changes over time.
-
----
-
-## Git and GitHub
-
-I became much more comfortable with Git and GitHub during this project.
-
-I used Git to create checkpoints while the application evolved instead of manually copying project folders.
-
-Commands I used regularly include:
-
-```bash
-git status
-git add
-git commit
-git push
+```text
+student-money-app/
+│
+├── app.py
+├── extensions.py
+├── forms.py
+├── localization.py
+├── models.py
+│
+├── routes/
+│   ├── auth.py
+│   ├── budgets.py
+│   ├── categories.py
+│   ├── dashboard.py
+│   ├── guards.py
+│   ├── history.py
+│   ├── onboarding.py
+│   ├── public.py
+│   ├── savings.py
+│   ├── settings.py
+│   └── transactions.py
+│
+├── services/
+│   ├── budgets.py
+│   ├── finance.py
+│   ├── safe_to_spend.py
+│   └── savings.py
+│
+├── templates/
+├── static/
+├── migrations/
+├── tests/
+│
+├── requirements.txt
+├── requirements-dev.txt
+├── pyproject.toml
+└── .github/
+    └── workflows/
+        └── ci.yml
 ```
 
-I also learned how GitHub Actions connects to a repository and how a push can automatically create a clean test run.
+---
 
-Before this project, Git and GitHub felt more like tools I knew about. During this project, they became part of my normal development process.
+# Local setup
+
+## 1. Clone the repository
+
+```bash
+git clone https://github.com/DragonsGames/student-money-app.git
+cd student-money-app
+```
+
+## 2. Create a virtual environment
+
+Windows:
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+macOS/Linux:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+```
+
+## 3. Install dependencies
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+For development/testing:
+
+```bash
+python -m pip install -r requirements-dev.txt
+```
+
+## 4. Configure environment variables
+
+Copy `.env.example` to `.env` and fill in your local configuration.
+
+The application expects a secret key and MySQL connection settings.
+
+Never commit `.env`.
+
+## 5. Create the MySQL database
+
+Create a local MySQL database and user matching the values in `.env`.
+
+The schema itself is managed with Alembic migrations.
+
+## 6. Apply migrations
+
+```bash
+flask db upgrade
+```
+
+## 7. Run the app
+
+```bash
+python app.py
+```
+
+Then open the local URL printed by Flask.
 
 ---
 
-## Flask and command-line learning
+## Useful migration commands
 
-This project also forced me to become more comfortable with the command line and virtual environments.
+Current revision:
 
-I learned how to:
+```bash
+flask db current
+```
 
-- create and activate a virtual environment
-- select the correct Python interpreter
-- install dependencies
-- run Flask applications
-- run pytest
-- run coverage
-- use Flask-Migrate commands
-- debug PowerShell path problems
-- understand the difference between my local Windows environment and GitHub's Linux environment
+Migration head:
 
-I also learned Flask in more depth, including:
+```bash
+flask db heads
+```
 
-- application factories
-- blueprints
-- routes
-- decorators
-- Flask-Login
-- forms
-- CSRF
+Upgrade:
+
+```bash
+flask db upgrade
+```
+
+---
+
+## Error handling
+
+The application includes branded handlers for:
+
+- `404 Not Found`
+- `405 Method Not Allowed`
+- `500 Internal Server Error`
+
+Internal exception details are not intentionally exposed to users.
+
+---
+
+## Accessibility
+
+The project includes:
+
+- semantic headings
+- visible focus states
+- skip navigation
+- form labels
+- localized validation errors
+- accessible button labels
+- reduced-motion support
+- semantic progress elements
+- status information expressed through text as well as color
+- Arabic RTL support
+- LTR isolation for financial values within RTL pages
+
+---
+
+# CS50 final project
+
+ILI pika was developed as my CS50 final project.
+
+The architecture was intentionally kept understandable and maintainable:
+
+- Flask server-rendered pages
+- SQLAlchemy models
+- MySQL
+- WTForms
 - Jinja
-- redirects
-- HTTP methods
-- error handlers
-- SQLAlchemy sessions
-- server-side ownership checks
+- vanilla JavaScript
+- normal CSS
+
+I deliberately avoided turning the project into a large SPA or adding infrastructure purely for complexity.
 
 ---
 
-## Security and ownership
+# AI assistance disclosure
 
-I tried to make this behave like a real multi-user application instead of assuming users would only use the interface normally.
+AI tools, including ChatGPT and OpenAI Codex, were used during development as engineering assistants.
 
-A user cannot change a URL ID to edit or delete another user's transaction, budget, savings goal, category, or income source.
+They were used for tasks including:
 
-The project also uses:
+- explaining concepts while I learned Flask, SQLAlchemy, WTForms, migrations, and testing
+- reviewing code and debugging errors
+- helping structure implementation steps
+- assisting with the visual redesign
+- identifying edge cases and security concerns
+- helping draft portions of automated tests and CI configuration
+- reviewing localization and RTL behavior
+- assisting with documentation
 
-- CSRF protection
-- POST-only destructive actions
-- password hashing
-- safer redirect validation
-- cookie settings
-- Jinja autoescaping
-- category color validation
-- custom 404, 405, and 500 pages
+The product direction, feature decisions, financial rules, manual testing, iteration, and final review remained under my control.
 
-This project made the difference between authentication ("who are you?") and authorization ("are you allowed to access this resource?") much clearer to me.
+Important financial behavior was explicitly reviewed and tested, including:
 
----
+- starting balance is separate from transaction income
+- `IncomeSource` does not automatically create money
+- savings progress does not mutate transaction balance
+- budget usage is based on actual expense transactions
+- Safe-to-Spend reserves remaining budget per category
+- money calculations use decimal-safe arithmetic
 
-## Design choices I debated
+AI-assisted code was reviewed and adapted before being accepted into the project.
 
-A lot of the work was not only writing code. I had to decide what the app should actually mean.
-
-### Should expected income affect balance?
-
-I decided no.
-
-An expected allowance or payment is not money the user currently has. Only actual income transactions change current balance.
-
-### Should adding money to a savings goal reduce balance?
-
-I decided no.
-
-The savings goal represents reserved money, not a bank transfer. It reduces Safe-to-Spend instead.
-
-### Should overspending one category reduce another category's reserve?
-
-I decided no.
-
-Budget reserves are calculated separately per category.
-
-### Should starting balance count as income?
-
-I decided no.
-
-Starting balance represents money that existed before the transaction history started.
-
-### Should I stop at a simple local MVP?
-
-Originally, yes.
-
-But I became interested in making the project feel more complete. That is why I added MySQL, migrations, stronger security, tests, CI, localization, and a much more polished interface.
-
-I probably became more ambitious than was necessary for the assignment, but I learned much more because of it.
+This disclosure is included to be transparent about how AI tools were used during development.
 
 ---
 
-## AI use and academic honesty
+## Current status
 
-I used external AI tools during this final project, mainly ChatGPT and OpenAI Codex.
-
-I want to describe that clearly because AI was a significant helper in this project, but it did not choose the project for me or decide what the product should be.
-
-The original idea, product direction, feature decisions, financial behavior, what I accepted or rejected, manual testing, and overall vision were mine.
-
-I planned the application step by step and repeatedly decided how each feature should behave before accepting an implementation.
-
-I also manually ran the project throughout development, found problems, tested fixes, changed behavior, and continued improving it over time.
-
-### AI for learning
-
-ChatGPT helped explain Flask, SQLAlchemy, WTForms, MySQL, migrations, Git, GitHub, testing, CSRF, authorization, and debugging while I was building the project.
-
-This was useful because I could ask why something was failing instead of only getting a final answer.
-
-### AI for planning
-
-I used ChatGPT to turn my feature ideas into smaller steps and later into detailed Codex prompts.
-
-Learning how to manage a coding-agent prompt became part of the experience for me.
-
-I learned that telling an AI "make this application" is not enough if I want to stay in control. My later prompts became specific about:
-
-- what could be changed
-- what should not be changed
-- expected behavior
-- financial rules
-- database rules
-- security requirements
-- testing requirements
-- what files should be reviewed
-- when Codex should stop and report instead of continuing
-
-### AI for implementation
-
-AI-assisted code generation was significant.
-
-A rough estimate, not a measured line count, is that the final literal code may be around **40–50% directly written by me and around 50–60% AI-assisted or AI-generated**.
-
-I do not think line count tells the full story because automatically generated tests and UI code can be much longer than the small product rules they implement or verify.
-
-My contribution was much higher in decisions, behavior, testing, debugging, and direction.
-
-My rough personal estimate is:
-
-- original idea/problem: around 95–100% mine
-- product vision: around 90–95% mine
-- feature decisions: around 85–95% mine
-- financial behavior/rules: around 80–90% mine
-- manual testing and deciding whether behavior was correct: mostly mine
-- final code typing/implementation: much more mixed between me and AI
-
-These percentages are only my attempt to describe the collaboration honestly. They are not measured statistics.
-
-### AI-heavy UI redesign
-
-The application already existed and worked before the final visual redesign.
-
-Later I used AI much more heavily to improve the appearance, mobile layout, themes, localization presentation, and general polish.
-
-This was one of the most AI-heavy parts of the project.
-
-I gave the design direction, rejected styles I did not want, described the feeling and constraints I wanted, and manually tested the result, but Codex wrote a large part of the final UI implementation.
-
-### AI-heavy testing and CI phase
-
-AI also helped heavily with the final testing and engineering-hardening phase.
-
-Codex helped create many automated tests, CI configuration, and quality checks.
-
-I then ran them, reviewed failures, manually tested the application, and fixed issues that appeared.
-
-For example, the suite passed locally but GitHub Actions still failed because of differences between Windows and Linux. I inspected the logs, understood the issue, changed the test, pushed again, and verified the final CI run passed.
-
-### Reviewing AI-generated work
-
-I did not treat AI-generated output as automatically correct.
-
-Changes were run locally, tested manually, reviewed, and adjusted over time.
-
-There were also many times where I changed the requirements or rejected behavior after seeing the result.
-
-AI use is also cited in comments in code where AI materially assisted.
-
-I understand the final-project rule that AI should amplify rather than supplant my work. I believe the strongest part of what I personally did was deciding what the application should be, learning the technologies needed to make it possible, breaking the work into stages, testing it, understanding problems, and continuing to improve it.
-
-Without AI I probably would have stopped at a much smaller MVP. AI made it possible for me to explore a more polished version, but it also forced me to learn how to review, test, debug, and control generated code instead of blindly accepting it.
-
----
-
-## Testing
-
-The final application currently has:
+Core application development is complete.
 
 ```text
 112 automated tests passing
-approximately 94% total coverage
+94% overall coverage
 GitHub Actions CI passing
-MySQL migration test passing in CI
+MySQL migration CI passing
 Ruff passing
 Python compile checks passing
 ```
 
-The tests cover normal behavior and edge cases such as:
-
-- authentication
-- duplicate registration
-- onboarding redirects
-- transaction ownership
-- category ownership
-- budget ownership
-- savings ownership
-- CSRF
-- HTTP method restrictions
-- open redirects
-- financial precision
-- Safe-to-Spend
-- budget calculations
-- savings calculations
-- localization
-- error pages
-- migration behavior
-
-I also performed manual testing because automated tests do not tell me whether the interface actually feels usable.
+Remaining work is primarily deployment configuration, the final CS50 demo video, screenshots/project presentation, and final submission preparation.
 
 ---
 
-## What I learned
+## Future possibilities
 
-This project taught me much more than I expected when I started it.
+Intentionally outside the current MVP:
 
-Technically, I learned more about:
-
-- Python
-- Flask
-- SQLAlchemy
-- MySQL
-- database relationships
-- migrations
-- Jinja
-- WTForms
-- authentication
-- authorization
-- CSRF
-- Decimal money handling
-- pytest
-- code coverage
-- Git
-- GitHub
-- GitHub Actions
-- virtual environments
-- PowerShell
-- debugging differences between Windows and Linux
-
-I also learned that building software involves a lot of decision making.
-
-A feature that sounds simple, like "add savings", immediately creates questions:
-
-- Does it reduce balance?
-- Can the user withdraw more than they saved?
-- What happens after the target is reached?
-- Can the user over-save?
-- Does it affect budgets?
-- How does it affect Safe-to-Spend?
-
-I had to answer questions like these throughout the project.
-
-I also learned that using an AI coding tool effectively is not the same as asking it to build something and accepting the result. The more serious the project became, the more specific I had to become about requirements, boundaries, testing, and expected behavior.
+- automatic recurring-income transactions
+- notifications/reminders
+- advanced analytics and charts
+- CSV import/export
+- optional AI financial guidance
+- pagination for very large histories
+- additional deployment-specific hardening
 
 ---
 
-## Final result
+## Author
 
-ILI pika became much larger than the project I first imagined.
+**Mohammed Sellami**
 
-It is not perfect and there are still things I could add in the future, such as advanced analytics, automatic recurring transactions, CSV import/export, notifications, and pagination for very large histories.
+Built as a CS50 final project and developed into a portfolio-ready student finance application.
 
-However, I decided to stop adding core features and treat the current version as the completed CS50 final project.
-
-For me, the most important result is not only that the application works. It is that I now understand much more about how a real web application is structured, how a database evolves, how to use Git and GitHub during development, how to test software, how to debug environment problems, and how to use AI as a development tool while still keeping control over the product I am building.
+Repository: https://github.com/DragonsGames/student-money-app
